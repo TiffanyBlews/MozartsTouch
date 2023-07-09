@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+# from fastapi.responses import HTMLResponse
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from io import BytesIO
 import aiohttp
@@ -15,7 +15,7 @@ def img2txt(img):
     return prediction
 
 def test(img):
-    return 0
+    return path/"static"/"BONK.mp3"
 
 def mubert(txt):
     pass
@@ -24,16 +24,17 @@ def riffusion(txt):
     pass
 
 def Diancai(img, mode):
+
     txt = img2txt(img)
+
     mode_dict={
         0: test,
         1: mubert,
         2: riffusion
     }
     result = mode_dict[mode](txt)
-    return {'result': result}
 
-    
+    return {'result': result}
 
 async def get_bytes_from_url(url):
     async with aiohttp.ClientSession() as session:
