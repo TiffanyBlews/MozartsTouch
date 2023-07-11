@@ -7,11 +7,12 @@ from pathlib import Path
 app_path = Path(__file__).resolve().parent.parent
 
 config = Config()
+config.clip_model_name = "ViT-H-14/laion2b_s32b_b79k"
+config.caption_model_name = "blip-base"
 config.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 config.blip_offload = False if torch.cuda.is_available() else True
-config.chunk_size = 2048
-config.flavor_intermediate_count = 512
-config.blip_num_beams = 64
+config.chunk_size = 1024
+config.flavor_intermediate_count = 1024
 ci = Interrogator(config)
 
 def img2txt(image):
