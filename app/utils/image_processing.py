@@ -1,7 +1,7 @@
 
 from PIL import Image
 from clip_interrogator import Config, Interrogator
-import torch
+import torch.cuda
 from pathlib import Path
 
 app_path = Path(__file__).resolve().parent.parent
@@ -18,7 +18,7 @@ ci_config.flavor_intermediate_count = 1024
 def img2txt(ci, image):
     image =Image.open(image)
     image = image.convert('RGB')
-    prompt_result = ci.interrogate_fast(image)
+    prompt_result = ci.interrogate_classic(image)
     return prompt_result
 
 if __name__=="__main__":
