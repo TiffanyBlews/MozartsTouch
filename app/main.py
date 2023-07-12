@@ -27,7 +27,7 @@ async def Diancai(img, mode):
     }
     result = await mode_dict[mode](txt)
 
-    return {'result': result}
+    return {'prompt': txt, 'result': result}
 
 async def get_bytes_from_url(url):
     async with aiohttp.ClientSession() as session:
