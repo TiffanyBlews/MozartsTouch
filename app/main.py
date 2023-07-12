@@ -11,7 +11,7 @@ from PIL import Image
 from utils.image_processing import img2txt, ci_config
 from utils.music_generation import test_music_gen, mubert, riffusion
 
-test_mode = True
+test_mode = True # True时关闭img2txt功能，节省运行资源
 if not test_mode:
     from clip_interrogator import Interrogator
     ci = Interrogator(ci_config)
