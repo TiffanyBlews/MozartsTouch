@@ -2,18 +2,19 @@ from fastapi import FastAPI, File, UploadFile, Form
 # from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from pathlib import Path
 from io import BytesIO
 import aiohttp
 import asyncio
-from clip_interrogator import Interrogator
 # from pydantic import BaseModel
 from PIL import Image
 
 from utils.image_processing import img2txt, ci_config
-from utils.text_processing import test, mubert, riffusion
+from utils.music_generation import test, mubert, riffusion
+
+from clip_interrogator import Interrogator
 ci = Interrogator(ci_config)
 
+from pathlib import Path
 app_path = Path(__file__).parent
 
 app = FastAPI(title='点彩成乐',description='“点彩成乐”大创后端')
@@ -70,7 +71,7 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
     Parameters:
     - url: 图片链接
     - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
-    
+
     Return: 
     - prompt: 图片转文字结果
     - result: 生成的音频文件base64后的结果
