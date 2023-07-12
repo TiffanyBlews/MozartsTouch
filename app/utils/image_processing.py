@@ -3,6 +3,7 @@ from PIL import Image
 from clip_interrogator import Config, Interrogator
 import torch.cuda
 from pathlib import Path
+import time
 
 app_path = Path(__file__).resolve().parent.parent
 
@@ -16,9 +17,13 @@ ci_config.flavor_intermediate_count = 1024
 
 
 def img2txt(ci, image):
+    start_time = time.time()
+
     image =Image.open(image)
     image = image.convert('RGB')
     prompt_result = ci.interrogate_classic(image)
+
+    print("Time taken for img2txt:", time.time() - start_time)
     return prompt_result
 
 if __name__=="__main__":
