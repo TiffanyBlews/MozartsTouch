@@ -3,7 +3,7 @@ from pathlib import Path
 import base64
 app_path = Path(__file__).resolve().parent.parent
 
-def test(txt: str) -> Bytes:
+def test_music_gen(txt: str) -> Bytes:
     test_path = app_path/"static"/"BONK.mp3"
     test_mp3 = open(test_path,"rb").read()
     return base64.b64encode(test_mp3)

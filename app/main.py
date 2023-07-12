@@ -9,7 +9,7 @@ import asyncio
 from PIL import Image
 
 from utils.image_processing import img2txt, ci_config
-from utils.music_generation import test, mubert, riffusion
+from utils.music_generation import test_music_gen, mubert, riffusion
 
 from clip_interrogator import Interrogator
 ci = Interrogator(ci_config)
