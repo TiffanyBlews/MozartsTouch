@@ -50,12 +50,14 @@ async def get_bytes_from_url(url: str):
 async def upload_file(file: UploadFile = File(...), mode: int = Form(...)):
     '''
     上传图片以进行音乐生成
+
     Parameters:
-        - file: 图片文件，Content-Type: image/*
-        - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
+    - file: 图片文件，Content-Type: image/*
+    - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
+
     Return: 
-        - prompt: 图片转文字结果
-        - result: 生成的音频文件base64后的结果
+    - prompt: 图片转文字结果
+    - result: 生成的音频文件base64后的结果
     '''
     img = read_image_from_binary(file.file)
     return await Diancai(img, mode)
@@ -64,12 +66,14 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...)):
 async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
     '''
     上传图片链接以进行音乐生成
+
     Parameters:
-        - url: 图片链接
-        - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
+    - url: 图片链接
+    - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
+    
     Return: 
-        - prompt: 图片转文字结果
-        - result: 生成的音频文件base64后的结果
+    - prompt: 图片转文字结果
+    - result: 生成的音频文件base64后的结果
     '''
     bytes = await get_bytes_from_url(url)
     img = read_image_from_binary(BytesIO(bytes))
