@@ -30,7 +30,7 @@ async def Diancai(img: Image, mode: int):
     txt = img2txt(ci, img)
     # 文字生成音乐
     mode_dict={
-        0: test,
+        0: test_music_gen,
         1: mubert,
         2: riffusion
     }
