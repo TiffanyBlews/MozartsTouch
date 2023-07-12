@@ -11,8 +11,10 @@ from PIL import Image
 from utils.image_processing import img2txt, ci_config
 from utils.music_generation import test_music_gen, mubert, riffusion
 
-from clip_interrogator import Interrogator
-ci = Interrogator(ci_config)
+test_mode = True
+if not test_mode:
+    from clip_interrogator import Interrogator
+    ci = Interrogator(ci_config)
 
 from pathlib import Path
 app_path = Path(__file__).parent
@@ -27,7 +29,10 @@ app.add_middleware(
 
 async def Diancai(img: Image, mode: int):
     # 图片转文字
-    txt = img2txt(ci, img)
+    if not test_mode:
+        txt = img2txt(ci, img)
+    else:
+        txt = "test"
     # 文字生成音乐
     mode_dict={
         0: test_music_gen,
