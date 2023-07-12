@@ -7,17 +7,18 @@ from pathlib import Path
 from io import BytesIO
 import aiohttp
 import asyncio
+from clip_interrogator import Interrogator
 
 
-from utils.image_processing import img2txt
+from utils.image_processing import img2txt, ci_config
 from utils.text_processing import test, mubert, riffusion
+ci = Interrogator(ci_config)
 
 app_path = Path(__file__).parent
 app = FastAPI()
 
 async def Diancai(img, mode):
-
-    txt = await img2txt(img)
+    txt = await img2txt(ci, img)
 
     mode_dict={
         0: test,
