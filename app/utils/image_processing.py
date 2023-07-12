@@ -1,4 +1,3 @@
-
 from PIL import Image
 from clip_interrogator import Config, Interrogator
 import torch.cuda
@@ -16,10 +15,8 @@ ci_config.chunk_size = 1024
 ci_config.flavor_intermediate_count = 1024
 
 
-def img2txt(ci, image):
+def img2txt(ci: Interrogator, image: Image) -> str:
     start_time = time.time()
-
-    image =Image.open(image)
     image = image.convert('RGB')
     prompt_result = ci.interrogate_classic(image)
 

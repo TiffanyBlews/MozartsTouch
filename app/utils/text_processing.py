@@ -1,14 +1,18 @@
+from ast import Bytes
 from pathlib import Path
 import base64
 app_path = Path(__file__).resolve().parent.parent
 
-async def test(txt):
+def test(txt: str) -> Bytes:
     test_path = app_path/"static"/"BONK.mp3"
-    f = open(test_path)
-    return base64.b64encode(f.read()).decode("utf-8")
+    test_mp3 = open(test_path,"rb").read()
+    return base64.b64encode(test_mp3)
 
-async def mubert(txt):
+def mubert(txt: str) -> Bytes:
     pass
 
-async def riffusion(txt):
+def riffusion(txt: str) -> Bytes:
     pass
+
+if __name__=="__main__":
+    print(test(""))
