@@ -3,6 +3,8 @@ from pathlib import Path
 import base64
 app_path = Path(__file__).resolve().parent.parent
 
+import Mousai
+
 def test_music_gen(txt: str) -> Bytes:
     print("音乐生成提示词：" + txt)
     test_path = app_path/"static"/"BONK.mp3"
@@ -15,5 +17,8 @@ def mubert(txt: str) -> Bytes:
 def riffusion(txt: str) -> Bytes:
     pass
 
+def mousai(txt: str) -> Bytes:
+    pass
+
 if __name__=="__main__":
-    print(test(""))
+    print(test_music_gen(""))
