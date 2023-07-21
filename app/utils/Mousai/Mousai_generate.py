@@ -2,7 +2,7 @@ from audio_diffusion_pytorch import DiffusionModel, UNetV0, VDiffusion, VSampler
 import torch
 
 '''
-From:
+Reference:
 https://github.com/archinetai/audio-diffusion-pytorch
 '''
 
