@@ -3,22 +3,43 @@ from pathlib import Path
 import base64
 app_path = Path(__file__).resolve().parent.parent
 
-import Mousai
+from abc import ABCMeta, abstractmethod
 
-def test_music_gen(txt: str) -> Bytes:
-    print("音乐生成提示词：" + txt)
-    test_path = app_path/"static"/"BONK.mp3"
-    test_mp3 = open(test_path,"rb").read()
-    return base64.b64encode(test_mp3)
+class MusicGenerator(metaclass=ABCMeta):
+    @abstractmethod
+    def generate(self, text: str) ->Bytes:
+        pass
 
-def mubert(txt: str) -> Bytes:
-    pass
+class MusicGeneratorFactory:
+    def create_generator(self, mode) -> MusicGenerator:
+        generator_dict={
+            0: TestGenerator,
+            1: MubertGenerator,
+            2: RiffusionGenerator
+        }
+        return generator_dict[mode]()
 
-def riffusion(txt: str) -> Bytes:
-    pass
+class TestGenerator(MusicGenerator):
+    def generate(self, text: str) -> Bytes:
+        print("音乐生成提示词：" + text)
+        test_path = app_path/"static"/"BONK.mp3"
+        test_mp3 = open(test_path,"rb").read()
+        return test_mp3
 
-def mousai(txt: str) -> Bytes:
-    pass
+class MubertGenerator(MusicGenerator):
+    def generate(self, text: str) -> Bytes:
+        pass
+
+class RiffusionGenerator(MusicGenerator):
+    def generate(self, text: str) -> Bytes:
+        pass
+
+class MousaiGenerator(MusicGenerator):
+    def generate(self, text: str) -> Bytes:
+        pass
+
 
 if __name__=="__main__":
-    print(test_music_gen(""))
+    mgfactory = MusicGeneratorFactory()
+    mg = mgfactory.create_generator(0)
+    print(mg.generate(""))

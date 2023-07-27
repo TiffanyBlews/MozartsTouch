@@ -8,13 +8,15 @@ import asyncio
 # from pydantic import BaseModel
 from PIL import Image
 
-from utils.image_processing import img2txt, ci_config
-from utils.music_generation import test_music_gen, mubert, riffusion
+from utils.image_processing import ImageRecognization
+from utils.music_generation import MusicGenerator, MusicGeneratorFactory
 
-test_mode = True # True时关闭img2txt功能，节省运行资源
+ir = ImageRecognization()
+mgfactory = MusicGeneratorFactory()
+
+test_mode = False # True时关闭img2txt功能，节省运行资源
 if not test_mode:
-    from clip_interrogator import Interrogator
-    ci = Interrogator(ci_config)
+    ir.instantiate_ci()
 
 from pathlib import Path
 app_path = Path(__file__).parent
@@ -27,21 +29,38 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def Diancai(img: Image, mode: int):
-    # 图片转文字
-    if not test_mode:
-        txt = img2txt(ci, img)
-    else:
-        txt = "test"
-    # 文字生成音乐
-    mode_dict={
-        0: test_music_gen,
-        1: mubert,
-        2: riffusion
-    }
-    result = mode_dict[mode](txt)
+class Entry:
 
-    return {'prompt': txt, 'result': result}
+    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator) -> None:
+        self.img=img
+        self.music_gen = music_gen
+        self.image_recog = image_recog
+        self.txt = None
+    
+    def img2txt(self):
+        self.txt = self.image_recog.img2txt(self.img)
+    
+    def _test_img2txt(self):
+        self.txt = self.image_recog._test_img2txt(self.img)
+
+    def txt2music(self):
+        self.music_gen.generate(self.txt)
+
+
+async def Diancai(img: Image, mode: int):
+    mg = mgfactory.create_generator(mode)
+
+    entry = Entry(img, ir, mg)
+    # 图片转文字
+    if test_mode:
+        entry._test_img2txt()
+    else:
+        entry.img2txt()
+    # 文字生成音乐
+
+    result = entry.txt2music()
+
+    return {'prompt': entry.txt, 'result': result}
 
 def read_image_from_binary(binary: BytesIO) -> Image.Image:
     img = Image.open(binary)
