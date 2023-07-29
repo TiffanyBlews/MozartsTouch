@@ -5,7 +5,7 @@
 
 上传表单内容：
 - `file`：图片文件，Content-Type: `image/*`。
-- `mode`：指定生成模型，可选值为`0`（测试用）、`1`（Mubert模型）、`2`（Riffusion模型）。
+- `mode`：指定生成模型，可选值为`0`（测试用）、`1`（Mubert模型）、`2`（Riffusion模型）、`3`（MusicGen模型）。
 
 返回结果：
 - `prompt`：图片转文字结果。
@@ -18,7 +18,7 @@
 
 上传表单内容：
 - `url`：图片链接，字符串。
-- `mode`：指定生成模型，可选值为`0`（测试用）、`1`（Mubert模型）、`2`（Riffusion模型）。
+- `mode`：指定生成模型，可选值为`0`（测试用）、`1`（Mubert模型）、`2`（Riffusion模型）、`3`（MusicGen模型）。
 
 返回结果：
 - `prompt`：图片转文字结果。
