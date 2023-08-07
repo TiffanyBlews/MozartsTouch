@@ -31,7 +31,7 @@ class ImageRecognization:
         return prompt_result
 
     def _test_img2txt(self, image: Image) -> str:
-        return "test"
+        return "beautiful landscape of Africa, very satisfying"
 
 if __name__=="__main__":
     test_image = app_path / "static" / "test.jpg"
