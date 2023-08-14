@@ -4,6 +4,7 @@ import datetime
 from fastapi import FastAPI, File, UploadFile, Form
 # from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import uvicorn
 from io import BytesIO
 import aiohttp
@@ -49,12 +50,26 @@ class Entry:
         self.txt = self.image_recog._test_img2txt(self.img)
 
     def txt2music(self):
-        music_bytes_io = self.music_gen.generate(self.txt)
-        self.music_b64 = base64.b64encode(music_bytes_io.getvalue()).decode()
+        self.music_bytes_io = self.music_gen.generate(self.txt)
+        # self.music_b64 = base64.b64encode(music_bytes_io.getvalue()).decode()
 
+    def save_to_file(self):
+        output_folder = Path("outputs")
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        self.result_file = f"{self.timestamp}.mp3"
+        file_path = output_folder / self.result_file
+
+        with open(file_path, "wb") as music_file:
+            music_file.write(self.music_bytes_io)
+
+        print(f"音乐已保存至 {file_path}")
+
+        return self.result_file
+        
 class ResultModel(BaseModel):
     prompt: str
-    result: str
+    result_url: str
 
 async def Diancai(img: Image, mode: int):
     mg = mgfactory.create_generator(mode)
@@ -67,8 +82,8 @@ async def Diancai(img: Image, mode: int):
         entry.img2txt()
     # 文字生成音乐
     entry.txt2music()
-    
-    result = ResultModel(prompt= entry.txt, result= entry.music_b64)
+    entry.save_to_file()
+    result = ResultModel(prompt= entry.txt, result_url= entry.result_file)
     
     return result
 
@@ -117,6 +132,11 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
 @app.get("/")
 async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night!"}
+
+@app.get("/music/{result_url}")
+async def get_music(result_url: str):
+    file_full_path = Path("outputs") / result_url
+    return FileResponse(file_full_path)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
