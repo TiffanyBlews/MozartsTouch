@@ -69,7 +69,7 @@ class Entry:
         
 class ResultModel(BaseModel):
     prompt: str
-    result_url: str
+    result_file: str
 
 async def Diancai(img: Image, mode: int):
     mg = mgfactory.create_generator(mode)
@@ -83,7 +83,7 @@ async def Diancai(img: Image, mode: int):
     # 文字生成音乐
     entry.txt2music()
     entry.save_to_file()
-    result = ResultModel(prompt= entry.txt, result_url= entry.result_file)
+    result = ResultModel(prompt= entry.txt, result_file= entry.result_file)
     
     return result
 
@@ -103,11 +103,11 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...)):
 
     Parameters:
     - file: 图片文件，Content-Type: image/*
-    - mode: 指定生成模型（0:测试用；1:Mubert模型；2:Riffusion模型）
+    - mode: 指定生成模型（0:测试用；1:Mubert模型（不可用）；2:Riffusion模型（不可用）；3:MusicGen模型
 
     Return: 
     - prompt: 图片转文字结果
-    - result: 生成的音频文件base64后的结果
+    - result_file: 生成的音频文件名，使用GET方法访问"主机名/music/{result_file}"获取音频文件
     '''
     img = read_image_from_binary(file.file)
     return await Diancai(img, mode)
@@ -119,11 +119,11 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
 
     Parameters:
     - url: 图片链接
-    - mode: 指定生成模型（0:测试用；1:Mubert模型（不可用）；2:Riffusion模型（不可用）；3:MusicGen模型）
+    - mode: 指定生成模型（0:测试用；1:Mubert模型（不可用）；2:Riffusion模型（不可用）；3:MusicGen模型
 
     Return: 
     - prompt: 图片转文字结果
-    - result: 生成的音频文件base64后的结果
+    - result_file: 生成的音频文件名，使用GET方法访问"主机名/music/{result_file}"获取音频文件
     '''
     bytes = await get_bytes_from_url(url)
     img = read_image_from_binary(BytesIO(bytes))
@@ -133,9 +133,15 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
 async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night!"}
 
-@app.get("/music/{result_url}")
-async def get_music(result_url: str):
-    file_full_path = Path("outputs") / result_url
+@app.get("/music/{result_file}")
+async def get_music(result_file: str):
+    '''
+    下载对应位置的音频文件
+
+    Return: 
+    - 音频文件
+    '''
+    file_full_path = Path("outputs") / result_file
     return FileResponse(file_full_path)
 
 if __name__ == "__main__":
