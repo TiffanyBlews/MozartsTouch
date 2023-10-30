@@ -13,4 +13,3 @@
 - 尝试将lora模型附加至clip模型中以生成描述音乐的文本
 - 将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`
 - 测试、优化与前端的通信
-- 增加在服务器保存生成结果的功能
