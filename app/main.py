@@ -19,7 +19,7 @@ from utils.music_generation import MusicGenerator, MusicGeneratorFactory
 ir = ImageRecognization()
 mgfactory = MusicGeneratorFactory()
 
-test_mode = True # True时关闭img2txt功能，节省运行资源
+test_mode = False # True时关闭img2txt功能，节省运行资源
 if not test_mode:
     ir.instantiate_ci()
 
@@ -61,7 +61,7 @@ class Entry:
         file_path = output_folder / self.result_file
 
         with open(file_path, "wb") as music_file:
-            music_file.write(self.music_bytes_io)
+            music_file.write(self.music_bytes_io.getvalue())
 
         print(f"音乐已保存至 {file_path}")
 
