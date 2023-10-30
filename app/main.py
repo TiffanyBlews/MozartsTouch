@@ -36,11 +36,12 @@ app.add_middleware(
 
 class Entry:
 
-    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator) -> None:
+    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, time: int) -> None:
         self.img=img
         self.music_gen = music_gen
         self.image_recog = image_recog
         self.txt = None
+        self.time = time
         self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
     def img2txt(self):
@@ -50,7 +51,7 @@ class Entry:
         self.txt = self.image_recog._test_img2txt(self.img)
 
     def txt2music(self):
-        self.music_bytes_io = self.music_gen.generate(self.txt)
+        self.music_bytes_io = self.music_gen.generate(self.txt, self.time)
         # self.music_b64 = base64.b64encode(music_bytes_io.getvalue()).decode()
 
     def save_to_file(self):
@@ -71,10 +72,10 @@ class ResultModel(BaseModel):
     prompt: str
     result_file: str
 
-async def Diancai(img: Image, mode: int):
+async def Diancai(img: Image, mode: int, time: int):
     mg = mgfactory.create_generator(mode)
 
-    entry = Entry(img, ir, mg)
+    entry = Entry(img, ir, mg, time)
     # 图片转文字
     if test_mode:
         entry._test_img2txt()
@@ -97,7 +98,7 @@ async def get_bytes_from_url(url: str):
             return await response.read()
 
 @app.post("/upload", response_model=ResultModel)
-async def upload_file(file: UploadFile = File(...), mode: int = Form(...)):
+async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time: int = Form(...)):
     '''
     上传图片以进行音乐生成
 
@@ -110,10 +111,10 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...)):
     - result_file: 生成的音频文件名，使用GET方法访问"主机名/music/{result_file}"获取音频文件
     '''
     img = read_image_from_binary(file.file)
-    return await Diancai(img, mode)
+    return await Diancai(img, mode, time)
 
 @app.post("/upload-url", response_model=ResultModel)
-async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
+async def upload_url(*, url: str = Form(...), mode: int = Form(...), time: int = Form(...)):
     '''
     上传图片链接以进行音乐生成
 
@@ -127,7 +128,7 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...)):
     '''
     bytes = await get_bytes_from_url(url)
     img = read_image_from_binary(BytesIO(bytes))
-    return await Diancai(img, mode)
+    return await Diancai(img, mode, time)
 
 @app.get("/")
 async def root():
