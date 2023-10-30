@@ -105,6 +105,7 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time:
     Parameters:
     - file: 图片文件，Content-Type: image/*
     - mode: 指定生成模型（0:测试用；1:Mubert模型（不可用）；2:Riffusion模型（不可用）；3:MusicGen模型
+    - time: 指定生成时间，请输入整数，以秒为单位
 
     Return: 
     - prompt: 图片转文字结果
@@ -113,6 +114,7 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time:
     img = read_image_from_binary(file.file)
     return await Diancai(img, mode, time)
 
+"""
 @app.post("/upload-url", response_model=ResultModel)
 async def upload_url(*, url: str = Form(...), mode: int = Form(...), time: int = Form(...)):
     '''
@@ -129,6 +131,7 @@ async def upload_url(*, url: str = Form(...), mode: int = Form(...), time: int =
     bytes = await get_bytes_from_url(url)
     img = read_image_from_binary(BytesIO(bytes))
     return await Diancai(img, mode, time)
+"""
 
 @app.get("/")
 async def root():
