@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import uvicorn
 from io import BytesIO
-import aiohttp
+# import aiohttp
 import asyncio
 # from pydantic import BaseModel
 from PIL import Image
@@ -149,4 +149,4 @@ async def get_music(result_file: str):
     return FileResponse(file_full_path)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=True)
