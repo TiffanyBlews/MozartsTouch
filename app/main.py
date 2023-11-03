@@ -62,7 +62,7 @@ class Entry:
         file_path = output_folder / self.result_file
 
         with open(file_path, "wb") as music_file:
-            music_file.write(self.music_bytes_io.getvalue())
+            music_file.write(self.music_bytes_io)
 
         print(f"音乐已保存至 {file_path}")
 

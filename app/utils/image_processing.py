@@ -27,7 +27,7 @@ class ImageRecognization:
         prompt_result = self.ci.interrogate_classic(image)
 
         print("Time taken for img2txt (sec):", time.time() - start_time)
-        print("prompt result:"+prompt_result)
+        print("prompt result:"+prompt_result.encode('gbk', errors='replace').decode('gbk'))
         return prompt_result
 
     def _test_img2txt(self, image: Image) -> str:

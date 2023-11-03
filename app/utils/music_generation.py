@@ -26,7 +26,7 @@ class MusicGeneratorFactory:
 
 class TestGenerator(MusicGenerator):
     def generate(self, text: str, time: int) -> io.BytesIO:
-        print("音乐生成提示词：" + text)
+        print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
         test_path = app_path/"static"/"BONK.mp3"
         test_mp3 = open(test_path,"rb").read()
         return test_mp3
