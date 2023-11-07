@@ -92,10 +92,12 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
     img = Image.open(binary)
     return img
 
+'''
 async def get_bytes_from_url(url: str):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             return await response.read()
+'''
 
 @app.post("/upload", response_model=ResultModel)
 async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time: int = Form(...)):
