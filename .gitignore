@@ -4,6 +4,5 @@ cache
 outputs
 app/musicgen.wav
 *.json
-.vs/Diancai-Backend/v17/.suo
-.vs/slnx.sqlite
+.vs
 *.wav
