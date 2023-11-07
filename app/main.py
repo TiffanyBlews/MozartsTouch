@@ -106,7 +106,7 @@ async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time:
 
     Parameters:
     - file: 图片文件，Content-Type: image/*
-    - mode: 指定生成模型（0:测试用；1:Mubert模型（不可用）；2:Riffusion模型（不可用）；3:MusicGen模型
+    - mode: 指定生成模型（0:测试用；1:MusicGen模型）
     - time: 指定生成时间，请输入整数，以秒为单位
 
     Return: 

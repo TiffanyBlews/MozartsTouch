@@ -18,9 +18,7 @@ class MusicGeneratorFactory:
     def create_generator(self, mode) -> MusicGenerator:
         generator_dict={
             0: TestGenerator,
-            1: MubertGenerator,
-            # 2: RiffusionGenerator,
-            3: MusicGenGenerator
+            1: MusicGenGenerator
         }
         return generator_dict[mode]()
 
@@ -65,5 +63,5 @@ class MousaiGenerator(MusicGenerator):
 
 if __name__=="__main__":
     mgfactory = MusicGeneratorFactory()
-    mg = mgfactory.create_generator(3)
+    mg = mgfactory.create_generator(1)
     print(mg.generate("cyberpunk electronic dancing music"))
