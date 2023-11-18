@@ -34,6 +34,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#设定一个灵活转换类型的函数
+def convert_to_bytes(data):
+    if isinstance(data, bytes):
+        # 如果data已经是bytes类型，则无需转换，直接返回
+        return data
+    elif isinstance(data, BytesIO):
+        # 如果data是BytesIO类型，则调用getvalue()方法获取bytes数据
+        return data.getvalue()
+    else:
+        raise ValueError("Invalid data type. Expected bytes or BytesIO.")
+
 class Entry:
 
     def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, time: int) -> None:
@@ -62,7 +73,7 @@ class Entry:
         file_path = output_folder / self.result_file
 
         with open(file_path, "wb") as music_file:
-            music_file.write(self.music_bytes_io.getvalue())
+            music_file.write(convert_to_bytes(self.music_bytes_io))
 
         print(f"音乐已保存至 {file_path}")
 
