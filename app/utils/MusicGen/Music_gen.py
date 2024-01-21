@@ -1,4 +1,4 @@
-from ast import Bytes
+#from ast import Bytes
 from music_generation import MusicGenerator
 
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
@@ -9,7 +9,7 @@ class MusicGenGenerator(MusicGenerator):
         self.processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
         self.model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
-    def generate(self, text: str) -> Bytes:
+    def generate(self, text: str):
         inputs = self.processor(
             text=[text],
             padding=True,

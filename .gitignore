@@ -6,3 +6,4 @@ app/musicgen.wav
 *.json
 .vs
 *.wav
+model
