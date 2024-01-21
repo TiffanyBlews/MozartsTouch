@@ -7,3 +7,4 @@ app/musicgen.wav
 .vs
 *.wav
 model
+musicgen.wav
