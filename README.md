@@ -13,3 +13,7 @@
 - 尝试将lora模型附加至clip模型中（或使用GPT接口）将生成的描述画面的文本改为描述音乐的文本
 - 将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`
 - 优化与前端的通信
+
+## Tips
+运行主代码前请先单独运行一次utils文件夹内的model_save以将模型下载至本地，记得科学上网（
+深夜 正在考虑通过参数决定选择小/中模型的可能，所以后续还会调整
