@@ -5,6 +5,5 @@ outputs
 app/musicgen.wav
 *.json
 .vs
-*.wav
 model
 musicgen.wav
