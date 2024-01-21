@@ -4,4 +4,4 @@ processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
 
-model.save_pretrained("./model")
+model.save_pretrained("./model/musicgen_small")
