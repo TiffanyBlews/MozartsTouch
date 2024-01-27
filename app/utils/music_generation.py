@@ -52,6 +52,7 @@ class MusicGenGenerator(MusicGenerator):
             f.write(wav_file_data.getvalue())
         return wav_file_data
 
+'''
 class MubertGenerator(MusicGenerator):
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         pass
@@ -59,7 +60,7 @@ class MubertGenerator(MusicGenerator):
 class MousaiGenerator(MusicGenerator):
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         pass
-
+'''
 
 if __name__=="__main__":
     mgfactory = MusicGeneratorFactory()
