@@ -1,10 +1,6 @@
-# from ast import Bytes
 import io
 from pathlib import Path
-# import base64
 
-# from Riffusion.Riffusion_generate import RiffusionGenerator
-# from MusicGen.Music_gen import MusicGenGenerator
 app_path = Path(__file__).resolve().parent.parent
 
 from abc import ABCMeta, abstractmethod
@@ -52,15 +48,6 @@ class MusicGenGenerator(MusicGenerator):
             f.write(wav_file_data.getvalue())
         return wav_file_data
 
-'''
-class MubertGenerator(MusicGenerator):
-    def generate(self, text: str, music_duration: int) -> io.BytesIO:
-        pass
-
-class MousaiGenerator(MusicGenerator):
-    def generate(self, text: str, music_duration: int) -> io.BytesIO:
-        pass
-'''
 
 if __name__=="__main__":
     mgfactory = MusicGeneratorFactory()
