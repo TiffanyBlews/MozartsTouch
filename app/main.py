@@ -57,7 +57,6 @@ class Entry:
 
     def txt2music(self):
         self.music_bytes_io = self.music_gen.generate(self.txt, self.music_duration)
-        # self.music_b64 = base64.b64encode(music_bytes_io.getvalue()).decode()
 
     def save_to_file(self):
         output_folder = Path("outputs")
