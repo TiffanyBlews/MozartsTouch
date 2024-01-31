@@ -2,6 +2,7 @@
 import io
 from pathlib import Path
 # import base64
+import time
 
 # from Riffusion.Riffusion_generate import RiffusionGenerator
 # from MusicGen.Music_gen import MusicGenGenerator
@@ -45,11 +46,13 @@ class MusicGenGenerator(MusicGenerator):
             padding=True,
             return_tensors="pt",
         )
+        start_time = time.time()
         wav_file_data = io.BytesIO()
         audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) #music_duration为秒数，256token = 5s 
         scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].numpy())
         with open('musicgen.wav', 'wb') as f:
             f.write(wav_file_data.getvalue())
+        print("[TIME] taken for txt2music (sec):", time.time() - start_time)
         return wav_file_data
 
 class MubertGenerator(MusicGenerator):
