@@ -7,3 +7,4 @@ app/musicgen.wav
 .vs
 model
 musicgen.wav
+api_key.ini
