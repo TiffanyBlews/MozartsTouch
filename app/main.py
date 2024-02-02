@@ -11,6 +11,7 @@ import time
 
 from utils.image_processing import ImageRecognization
 from utils.music_generation import MusicGenerator, MusicGeneratorFactory
+from utils.txt_converter import TxtConverter
 
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 
@@ -37,6 +38,8 @@ class Entry:
     def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, music_duration: int) -> None:
         self.img=img
         self.txt = None
+        self.txt_con = TxtConverter()
+        self.converted_txt = None
         self.image_recog = image_recog # 使用传入的图像识别模型对象
         self.music_gen = music_gen  # 使用传入的音乐生成对象
         self.music_duration = music_duration
@@ -50,9 +53,12 @@ class Entry:
         '''测试用，跳过图像识别'''
         self.txt = self.image_recog.test_img2txt(self.img)
 
+    def txt_converter(self):
+        self.converted_txt = self.txt_con.txt_converter(self.txt)
+
     def txt2music(self):
         '''根据文本进行音乐生成，获取生成的音乐的BytesIO'''
-        self.music_bytes_io = self.music_gen.generate(self.txt, self.music_duration)
+        self.music_bytes_io = self.music_gen.generate(self.converted_txt, self.music_duration)
 
     def save_to_file(self):
         '''将音乐保存到`/outputs`中，文件名为用户上传时间的时间戳'''
@@ -72,6 +78,7 @@ class Entry:
 class ResultModel(BaseModel):
     '''定义响应体格式'''
     prompt: str
+    converted_prompt:str
     result_file_name: str
 
 async def Diancai(img: Image, mode: int, music_duration: int):
@@ -90,9 +97,10 @@ async def Diancai(img: Image, mode: int, music_duration: int):
         entry.img2txt()
 
     # 文本生成音乐
+    entry.txt_converter()
     entry.txt2music()
     entry.save_to_file()
-    result = ResultModel(prompt= entry.txt, result_file_name= entry.result_file_name)
+    result = ResultModel(prompt= entry.txt, converted_prompt= entry.converted_txt, result_file_name= entry.result_file_name)
     
     return result
 
@@ -147,3 +155,5 @@ async def root():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
+    print(Entry.txt)
+    print(Entry.converted_txt)
