@@ -4,3 +4,4 @@ uvicorn==0.22.0
 Pillow==10.0.0
 torch==2.0.1
 transformers==4.31.0
+openai==1.10.0

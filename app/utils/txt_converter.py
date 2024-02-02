@@ -8,7 +8,7 @@ class TxtConverter:
     def txt_converter(self,content):
         client = OpenAI(
             base_url="https://oneapi.xty.app/v1", 
-            api_key="sk-uqaulFmTlu24Onqd70A687FaC4A44dEd8dD2Cf33D85f9e76",
+            api_key="YOUR-API-KEY",
             http_client=httpx.Client(
                 base_url="https://oneapi.xty.app/v1",
                 follow_redirects=True,
