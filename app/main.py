@@ -1,3 +1,7 @@
+'''
+不要直接运行这个程序！运行start_server.py！！！
+Don't run this file directly! Run start_server.py instead!!!
+'''
 import datetime
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +18,30 @@ from utils.music_generation import MusicGenerator, MusicGeneratorFactory
 from utils.txt_converter import TxtConverter
 
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
+
+test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
+
+def import_clip():
+    '''导入图像识别模型'''
+    start_time = time.time()
+
+    ir = ImageRecognization()
+    if not test_mode:
+        ir.instantiate_ci()
+    print(f"[TIME] taken to load Image Recognition model: {time.time() - start_time :.2f}s")
+
+    return ir
+
+def import_musicgen():
+    '''导入音乐生成模型'''
+    start_time = time.time()
+    mgfactory = MusicGeneratorFactory()
+    mg = mgfactory.create_generator(1)
+    print(f"[TIME] taken to load Music Generation model: {time.time() - start_time :.2f}s")
+    return mg
+
+ir = import_clip()
+mg = import_musicgen()
 
 class Entry:
     '''每个Entry代表一次用户输入，然后调用自己的方法对输入进行处理以得到生成结果'''
@@ -44,7 +72,7 @@ class Entry:
 
     def save_to_file(self):
         '''将音乐保存到`/outputs`中，文件名为用户上传时间的时间戳'''
-        output_folder = Path("outputs")
+        output_folder = app_path / "outputs"
         output_folder.mkdir(parents=True, exist_ok=True)
 
         self.result_file_name = f"{self.timestamp}.mp3"
@@ -66,7 +94,7 @@ class ResultModel(BaseModel):
 async def Diancai(img: Image, mode: int, music_duration: int):
     '''模型核心过程'''
     # 根据输入mode信息获得对应的音乐生成模型类的实例
-    mg = mgs[mode]
+    # mg = mgs[mode]
 
     # 根据用户输入创建一个类，并传入图像识别和音乐生成模型的实例（无论多少请求都只用同一个实例，只需导入模型一次即可）
     entry = Entry(img, ir, mg, music_duration)
@@ -136,25 +164,4 @@ async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端域名，在域名后面加上`/docs#/`访问后端API文档页面！"}
 
 if __name__ == "__main__":
-    
-    # 首先实例化模型，无论多少请求都只用同一个实例，这样只需导入模型一次即可
-
-    # 导入图像识别模型
-    start_time = time.time()
-
-    ir = ImageRecognization()
-    test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
-    if not test_mode:
-        ir.instantiate_ci()
-
-    print(f"[TIME] taken to load Image Recognition model: {time.time() - start_time :.2f}s")
-
-    # 导入音乐生成模型
-    start_time = time.time()
-    mgfactory = MusicGeneratorFactory()
-    mgs = { 0:mgfactory.create_generator(0), 1: mgfactory.create_generator(1) }
-    print(f"[TIME] taken to load Music Generation model: {time.time() - start_time :.2f}s")
-
     uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
-    # print(Entry.txt)
-    # print(Entry.converted_txt)

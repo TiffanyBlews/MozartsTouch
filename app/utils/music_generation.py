@@ -3,6 +3,7 @@ from pathlib import Path
 import time
 
 import torch
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
@@ -46,16 +47,15 @@ class TestGenerator(MusicGenerator):
         print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
         test_path = app_path/"static"/"BONK.mp3"
         test_mp3 = open(test_path,"rb").read()
-        return test_mp3
+        return io.BytesIO(test_mp3)
 
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 import scipy
 
 class MusicGenSmallGenerator(MusicGenerator):
     def __init__(self) -> None:
-        
-        self.processor = AutoProcessor.from_pretrained("./model/musicgen_small_processor")
-        self.model = MusicgenForConditionalGeneration.from_pretrained("./model/musicgen_small_model").to(device)
+        self.processor = AutoProcessor.from_pretrained(app_path / "model" / "musicgen_small_processor")
+        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / "musicgen_small_model").to(device)
         self.sampling_rate = self.model.config.audio_encoder.sampling_rate
 
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
@@ -82,6 +82,6 @@ if __name__=="__main__":
     # 测试能否正常生成音乐，保存到当前目录下
     mgfactory = MusicGeneratorFactory()
     mg = mgfactory.create_generator(1)
-    output = mg.generate("cyberpunk electronic dancing music")
+    output = mg.generate("cyberpunk electronic dancing music",1)
     with open('musicgen.wav', 'wb') as f:
         f.write(output.getvalue())
