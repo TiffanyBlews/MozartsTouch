@@ -35,6 +35,21 @@ class Entry:
         '''测试用，跳过图像识别'''
         self.txt = self.image_recog.test_img2txt(self.img)
 
+    def txt_filter(self):
+        final_txt = ""
+        result_list = self.txt.split(", ")
+        it = 0
+        for rel in result_list:
+            # print(rel)
+            it += 1        
+            if it == 3 : continue # list[3] 表示图片来源，可丢弃
+            if it == 2 :
+                rel = rel.split(" by")[0]  # list[2] 表示图片创作者，一般都是瞎猜的，可丢弃
+            final_txt += rel + ", "
+        
+        self.txt = final_txt[:-2]
+        print("filtered_prompt result:"+self.txt.encode('gbk', errors='replace').decode('gbk'))
+    
     def txt_converter(self):
         self.converted_txt = self.txt_con.txt_converter(self.txt)
 
@@ -78,8 +93,11 @@ async def Diancai(img: Image, mode: int, music_duration: int):
     else:
         entry.img2txt()
 
-    # 文本生成音乐
+    # 文本优化
+    entry.txt_filter()
     entry.txt_converter()
+
+    #文本生成音乐
     entry.txt2music()
     entry.save_to_file()
     result = ResultModel(prompt= entry.txt, converted_prompt= entry.converted_txt, result_file_name= entry.result_file_name)
