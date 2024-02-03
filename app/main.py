@@ -15,24 +15,6 @@ from utils.txt_converter import TxtConverter
 
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 
-# 首先实例化模型，无论多少请求都只用同一个实例，这样只需导入模型一次即可
-
-# 导入图像识别模型
-start_time = time.time()
-
-ir = ImageRecognization()
-test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
-if not test_mode:
-    ir.instantiate_ci()
-
-print(f"[TIME] taken to load Image Recognition model: {time.time() - start_time :.2f}s")
-
-# 导入音乐生成模型
-start_time = time.time()
-mgfactory = MusicGeneratorFactory()
-mgs = { 0:mgfactory.create_generator(0), 1: mgfactory.create_generator(1) }
-print(f"[TIME] taken to load Music Generation model: {time.time() - start_time :.2f}s")
-
 class Entry:
     '''每个Entry代表一次用户输入，然后调用自己的方法对输入进行处理以得到生成结果'''
     def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, music_duration: int) -> None:
@@ -154,6 +136,25 @@ async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端域名，在域名后面加上`/docs#/`访问后端API文档页面！"}
 
 if __name__ == "__main__":
+    
+    # 首先实例化模型，无论多少请求都只用同一个实例，这样只需导入模型一次即可
+
+    # 导入图像识别模型
+    start_time = time.time()
+
+    ir = ImageRecognization()
+    test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
+    if not test_mode:
+        ir.instantiate_ci()
+
+    print(f"[TIME] taken to load Image Recognition model: {time.time() - start_time :.2f}s")
+
+    # 导入音乐生成模型
+    start_time = time.time()
+    mgfactory = MusicGeneratorFactory()
+    mgs = { 0:mgfactory.create_generator(0), 1: mgfactory.create_generator(1) }
+    print(f"[TIME] taken to load Music Generation model: {time.time() - start_time :.2f}s")
+
     uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
-    print(Entry.txt)
-    print(Entry.converted_txt)
+    # print(Entry.txt)
+    # print(Entry.converted_txt)
