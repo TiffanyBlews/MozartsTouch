@@ -2,6 +2,10 @@ import io
 from pathlib import Path
 import time
 
+import torch
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
 
 from abc import ABC, abstractmethod
@@ -50,9 +54,8 @@ import scipy
 
 class MusicGenSmallGenerator(MusicGenerator):
     def __init__(self) -> None:
-        
         self.processor = AutoProcessor.from_pretrained(app_path / "model" / "musicgen_small_processor")
-        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / "musicgen_small_model")
+        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / "musicgen_small_model").to(device)
         self.sampling_rate = self.model.config.audio_encoder.sampling_rate
 
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
@@ -65,12 +68,12 @@ class MusicGenSmallGenerator(MusicGenerator):
             text=[text],
             padding=True,
             return_tensors="pt",
-        )
+        ).to(device)
         audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) #music_duration为秒数，256token = 5s 
 
         # 将生成的音乐数据转换为BytesIO并返回
         wav_file_data = io.BytesIO()
-        scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].numpy())
+        scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].cpu().numpy())
         print(f"[TIME] taken for txt2music: {time.time() - start_time :.2f}s")
         return wav_file_data
 
