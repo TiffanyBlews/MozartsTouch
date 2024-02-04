@@ -74,8 +74,7 @@ class Entry:
             it += 1        
             if it == 3 : continue # list[3] 表示图片来源，可丢弃
             if it == 2 :
-                rel = rel.split(" by")[0]  # list[2] 表示图片创作者，但一般都是瞎猜的，可丢弃
-            final_txt += rel + ", "
+                rel = rel.split(" by")[0]  # list[2] 表示图片创作者，一般都是瞎猜的，可丢弃
         
         self.txt = final_txt[:-2]
         print("filtered_prompt result:"+self.txt.encode('gbk', errors='replace').decode('gbk'))
@@ -184,4 +183,4 @@ async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端域名，在域名后面加上`/docs#/`访问后端API文档页面！"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
+    # uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
