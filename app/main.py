@@ -14,12 +14,14 @@ from pathlib import Path
 import time
 
 from utils.image_processing import ImageRecognization
-from utils.music_generation import MusicGenerator, MusicGeneratorFactory
+from utils.music_generation import MusicGenerator, MusicGenGenerator
 from utils.txt_converter import TxtConverter
 
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 
 test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
+
+music_gen_model_name = "musicgen_medium" # "musicgen_medium" or "musicgen_small"
 
 def import_clip():
     '''导入图像识别模型'''
@@ -35,8 +37,8 @@ def import_clip():
 def import_musicgen():
     '''导入音乐生成模型'''
     start_time = time.time()
-    mgfactory = MusicGeneratorFactory()
-    mg = mgfactory.create_generator(1)
+    # mgfactory = MusicGeneratorFactory()
+    mg = MusicGenGenerator(music_gen_model_name)
     print(f"[TIME] taken to load Music Generation model: {time.time() - start_time :.2f}s")
     return mg
 

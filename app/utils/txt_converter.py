@@ -3,6 +3,8 @@ from pathlib import Path
 import httpx
 import configparser
 
+from sympy import content
+
 app_path = Path(__file__).resolve().parent.parent  # 项目根目录（`/app`）
 
 class TxtConverter:
@@ -39,16 +41,17 @@ class TxtConverter:
         completion = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "Convert in less than 200 characters this image caption to a very concise musical description with musical terms, as if you wanted to describe a musical ambiance, stricly in English"},
+                {"role": "system", "content": "Convert in less than 200 characters this image caption to a very concise musical description with musical terms, so that it can be used as a prompt to generate music through AI model, stricly in simple English. You need to speculate the mood of the given image caption and add it to the music description. You also need to specify a music genre in the description such as pop, hip hop, funk, electronic, jazz, rock, metal, soul, R&B etc. "},
                 {"role": "user", "content": content}
             ]
         )
         converted_result = completion.choices[0].message.content
-        print("converted result:" + converted_result.encode('gbk', errors='replace').decode('gbk'))
+        print("converted result: " + converted_result.encode('gbk', errors='replace').decode('gbk'))
         return converted_result
 
 if __name__ == "__main__":
-    content = "the image shows a bright star in the center of a galaxy"
+    # content = "the image shows a bright star in the center of a galaxy"
+    content = "a wreath hanging from a rope, an album cover inspired, land art, japanese shibari with flowers, hanging from a tree,the empress’ hanging"
     txt_con = TxtConverter()
     converted_result = txt_con.txt_converter(content)
     # print(converted_result)
