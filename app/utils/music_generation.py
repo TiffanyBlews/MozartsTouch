@@ -2,6 +2,10 @@ import io
 from pathlib import Path
 import time
 
+import torch
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
 
 from abc import ABC, abstractmethod
@@ -25,39 +29,40 @@ class MusicGenerator(ABC):
         """
         pass
 
-class MusicGeneratorFactory:
-    '''
-    为了便于测试调换模型，采用工厂模式获取音乐生成模型实例
-    '''
-    def create_generator(self, mode) -> MusicGenerator:
-        '''获取音乐生成模型实例，0为测试，1为MusicGenSmall'''
-        generator_dict={
-            0: TestGenerator,
-            1: MusicGenSmallGenerator
-        }
-        return generator_dict[mode]()
+# class MusicGeneratorFactory:
+#     '''
+#     为了便于测试调换模型，采用工厂模式获取音乐生成模型实例
+#     '''
+#     def create_generator(self, mode) -> MusicGenerator:
+#         '''获取音乐生成模型实例，0为测试，1为MusicGen'''
+#         generator_dict={
+#             0: TestGenerator,
+#             1: MusicGenGenerator
+#         }
+#         return generator_dict[mode]()
 
 class TestGenerator(MusicGenerator):
+    def __init__(self, model_name="test") -> None:
+        super().__init__()
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         '''测试用，只会返回固定的*BONK*声音文件'''
         print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
         test_path = app_path/"static"/"BONK.mp3"
         test_mp3 = open(test_path,"rb").read()
-        return test_mp3
+        return io.BytesIO(test_mp3)
 
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 import scipy
 
-class MusicGenSmallGenerator(MusicGenerator):
-    def __init__(self) -> None:
-        
-        self.processor = AutoProcessor.from_pretrained("./model/musicgen_small_processor")
-        self.model = MusicgenForConditionalGeneration.from_pretrained("./model/musicgen_small_model")
+class MusicGenGenerator(MusicGenerator):
+    def __init__(self, model_name = "musicgen_small") -> None:
+        self.processor = AutoProcessor.from_pretrained(app_path / "model" / (model_name+"_processor"))
+        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / (model_name+"_model")).to(device)
         self.sampling_rate = self.model.config.audio_encoder.sampling_rate
 
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         '''
-        使用 MusicGenSmall 模型生成音乐
+        使用 MusicGen 模型生成音乐
         '''
         start_time = time.time()
 
@@ -65,20 +70,21 @@ class MusicGenSmallGenerator(MusicGenerator):
             text=[text],
             padding=True,
             return_tensors="pt",
-        )
-        audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) #music_duration为秒数，256token = 5s 
+        ).to(device)
+        audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) # music_duration为秒数，256token = 5s 
 
         # 将生成的音乐数据转换为BytesIO并返回
         wav_file_data = io.BytesIO()
-        scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].numpy())
+        scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].cpu().numpy())
         print(f"[TIME] taken for txt2music: {time.time() - start_time :.2f}s")
         return wav_file_data
 
 
 if __name__=="__main__":
     # 测试能否正常生成音乐，保存到当前目录下
-    mgfactory = MusicGeneratorFactory()
-    mg = mgfactory.create_generator(1)
-    output = mg.generate("cyberpunk electronic dancing music")
-    with open('musicgen.wav', 'wb') as f:
+    # mgfactory = MusicGeneratorFactory()
+    # mg = mgfactory.create_generator(1)
+    mg = MusicGenGenerator("musicgen_medium")
+    output = mg.generate("cyberpunk electronic dancing music",1)
+    with open(app_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

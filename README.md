@@ -13,6 +13,9 @@
 
 运行main.py时会下载clip模型，因此出现下载读条是正常现象）
 
+## 运行
+直接运行[start_server.py](/app/start_server.py)，不要运行[main.py](/app/main.py)！
+
 深夜 正在考虑通过参数决定选择小/中模型的可能，所以后续还会调整
 
 目前默认音频生成模型为Musicgen-small
@@ -20,9 +23,8 @@
 
 ## TO-DO List
 - 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
-- 尝试将lora模型附加至clip模型中（或使用GPT接口）将生成的描述画面的文本改为描述音乐的文本
 - 将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`
-- 优化与前端的通信
+
 
 
 
