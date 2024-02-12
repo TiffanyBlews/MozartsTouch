@@ -5,8 +5,8 @@ processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
 model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
 
-model.save_pretrained("./model/musicgen_small_model")
-processor.save_pretrained("./model/musicgen_small_processor")
+model.save_pretrained("./app/model/musicgen_small_model")
+processor.save_pretrained("./app/model/musicgen_small_processor")
 
 
 #下载musicgen-medium并保存
@@ -14,5 +14,5 @@ processor = AutoProcessor.from_pretrained("facebook/musicgen-medium")
 model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-medium")
 
 
-model.save_pretrained("./model/musicgen_medium_model")
-processor.save_pretrained("./model/musicgen_medium_processor")
+model.save_pretrained("./app/model/musicgen_medium_model")
+processor.save_pretrained("./app/model/musicgen_medium_processor")

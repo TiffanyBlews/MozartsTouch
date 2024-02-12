@@ -182,5 +182,5 @@ async def get_music(result_file_name: str):
 async def root():
     return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端域名，在域名后面加上`/docs#/`访问后端API文档页面！"}
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)
