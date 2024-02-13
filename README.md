@@ -8,10 +8,6 @@
 
 项目logo（仮）
 
-## 运行前置
-运行主代码前请先单独运行一次utils文件夹内的model_save以将模型下载至本地，记得科学上网（
-
-运行main.py时会下载clip模型，因此出现下载读条是正常现象）
 
 ## 运行
 直接运行[start_server.py](/app/start_server.py)，不要运行[main.py](/app/main.py)！
