@@ -10,9 +10,9 @@
 
 
 ## 运行
-直接运行[start_server.py](/app/start_server.py)，不要运行[main.py](/app/main.py)！
+运行前请首先配置api_key（参见群内信息）
 
-深夜 正在考虑通过参数决定选择小/中模型的可能，所以后续还会调整
+直接运行[start_server.py](/app/start_server.py)，不要运行[main.py](/app/main.py)！
 
 目前默认音频生成模型为Musicgen-small
 

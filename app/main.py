@@ -6,7 +6,7 @@ import datetime
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-import uvicorn
+#import uvicorn
 from io import BytesIO
 from PIL import Image
 from pydantic import BaseModel
@@ -21,7 +21,8 @@ app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 
 test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
 
-music_gen_model_name = "musicgen_medium" # "musicgen_medium" or "musicgen_small"
+#模型选择：本地测试建议使用small，服务器测试建议使用medium，默认改为small方便所有人本地测试
+music_gen_model_name = "musicgen_small" # "musicgen_medium" or "musicgen_small"
 
 def import_clip():
     '''导入图像识别模型'''
