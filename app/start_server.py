@@ -15,6 +15,8 @@ model_path = "./app/model"
 
 if not os.path.exists(model_path):
 
+    print("model do not exist!\n")
+
     #下载musicgen-small并保存
     processor = AutoProcessor.from_pretrained("facebook/musicgen-small")
     model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
@@ -23,6 +25,7 @@ if not os.path.exists(model_path):
     model.save_pretrained("./app/model/musicgen_small_model")
     processor.save_pretrained("./app/model/musicgen_small_processor")
 
+    print("musicgen_small get\n")
 
     #下载musicgen-medium并保存
     processor = AutoProcessor.from_pretrained("facebook/musicgen-medium")
@@ -31,6 +34,8 @@ if not os.path.exists(model_path):
 
     model.save_pretrained("./app/model/musicgen_medium_model")
     processor.save_pretrained("./app/model/musicgen_medium_processor")
+
+    print("musicgen_medium get\n")
 
 
 
