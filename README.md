@@ -12,7 +12,7 @@
 ## 运行
 运行前请首先配置api_key（参见群内信息）
 
-直接运行[start_server.py](`python app/start_server.py`)，不要运行[main.py](/app/main.py)！
+直接运行 [start_server.py](/app/start_server.py) 即可：`python app/start_server.py`，不要运行[main.py](/app/main.py)！
 
 目前默认音频生成模型为Musicgen-small
 
