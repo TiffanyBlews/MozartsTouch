@@ -10,9 +10,10 @@
 
 
 ## 运行
-运行前请首先配置api_key（参见群内信息）
-
-直接运行 [start_server.py](/app/start_server.py) 即可：`python app/start_server.py`，不要运行[main.py](/app/main.py)！
+0. 运行前请首先配置api_key（参见群内信息，或者使用其他OpenAI的API）。
+1. 配置环境：`pip install -r requirements.txt`。
+2. 运行 [start_server.py](/app/start_server.py) 即可：`python app/start_server.py`。
+**注意：** 不要运行[main.py](/app/main.py)，会造成一些奇怪的错误！
 
 目前默认音频生成模型为Musicgen-small
 
