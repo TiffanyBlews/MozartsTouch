@@ -15,13 +15,14 @@
 2. 运行 [start_server.py](/app/start_server.py) 即可：`python app/start_server.py`。
 
 **注意：** 不要运行[main.py](/app/main.py)，会造成一些奇怪的错误！
+
 目前默认音频生成模型为 Musicgen-small.
 
 
 ## TO-DO List
 - 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
 - ~~将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`~~
-- 部署视频配乐的功能，尝试将 `Video-Llama` 或者 `Video-BLIP2` 项目与我们的项目整合。
+- 部署视频配乐的功能，尝试将 `Video-Llama` 或者 `Video-BLIP2` 整合到我们的项目中。
 
 
 
