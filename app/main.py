@@ -94,7 +94,7 @@ class Entry:
         output_folder = app_path / "outputs"
         output_folder.mkdir(parents=True, exist_ok=True)
 
-        self.result_file = f"{self.timestamp}.mp3"
+        self.result_file = f"{self.timestamp}.wav"
         file_path = output_folder / self.result_file
 
         with open(file_path, "wb") as music_file:
