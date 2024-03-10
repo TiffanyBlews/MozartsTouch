@@ -67,21 +67,6 @@ class Entry:
         '''测试用，跳过图像识别'''
         self.txt = self.image_recog.test_img2txt(self.img)
         
-    def txt_filter(self):
-        final_txt = ""
-        result_list = self.txt.split(", ")
-        it = 0
-        for rel in result_list:
-            # print(rel)
-            it += 1        
-            if it == 3 : continue # list[3] 表示图片来源，可丢弃
-            if it == 2 :
-                rel = rel.split(" by")[0]  # list[2] 表示图片创作者，一般都是瞎猜的，可丢弃
-            final_txt += rel + ", "
-        
-        self.txt = final_txt[:-2]
-        print("filtered_prompt result:"+self.txt.encode('gbk', errors='replace').decode('gbk'))
-
     def txt_converter(self):
         self.converted_txt = self.txt_con.txt_converter(self.txt)
 
@@ -126,7 +111,6 @@ async def Diancai(img: Image, mode: int, time: int):
         entry.img2txt()
 
     # 文本优化
-    entry.txt_filter()
     entry.txt_converter()
 
     #文本生成音乐
@@ -185,7 +169,6 @@ async def get_music(result_file: str):
     - 音频文件
     '''
     file_full_path = os.path.join(app_path, "outputs", result_file)
-    print("Here is ", file_full_path)
     return FileResponse(file_full_path)
 
 @app.get("/")
