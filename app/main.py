@@ -15,15 +15,15 @@ import time as timi
 import os
 
 from utils.image_processing import ImageRecognization
-from utils.music_generation import MusicGenerator, MusicGenGenerator
+from utils.music_generation import MusicGenerator, MusicGenGenerator, TestGenerator
 from utils.txt_converter import TxtConverter
 
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 
-test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
+test_mode = True # True时关闭img2txt功能，节省运行资源，用于调试程序
 
 #模型选择：本地测试建议使用small，服务器测试建议使用medium，默认改为small方便所有人本地测试
-music_gen_model_name = "musicgen_small" # "musicgen_medium" or "musicgen_small"
+music_gen_model_name = "test" # "musicgen_medium" or "musicgen_small" or "test"
 
 def import_clip():
     '''导入图像识别模型'''
@@ -39,8 +39,10 @@ def import_clip():
 def import_musicgen():
     '''导入音乐生成模型'''
     start_time = timi.time()
-    # mgfactory = MusicGeneratorFactory()
-    mg = MusicGenGenerator(music_gen_model_name)
+    if music_gen_model_name =="test":
+        mg = TestGenerator(music_gen_model_name)
+    else:
+        mg = MusicGenGenerator(music_gen_model_name)
     print(f"[TIME] taken to load Music Generation model: {timi.time() - start_time :.2f}s")
     return mg
 
