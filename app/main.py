@@ -23,7 +23,7 @@ app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 test_mode = True # True时关闭img2txt功能，节省运行资源，用于调试程序
 
 #模型选择：本地测试建议使用small，服务器测试建议使用medium，默认改为small方便所有人本地测试
-music_gen_model_name = "test" # "musicgen_medium" or "musicgen_small" or "test"
+music_gen_model_name = "musicgen_small" # "musicgen_medium" or "musicgen_small" or "test"
 
 def import_clip():
     '''导入图像识别模型'''
@@ -39,7 +39,7 @@ def import_clip():
 def import_musicgen():
     '''导入音乐生成模型'''
     start_time = timi.time()
-    if music_gen_model_name =="test":
+    if test_mode:
         mg = TestGenerator(music_gen_model_name)
     else:
         mg = MusicGenGenerator(music_gen_model_name)

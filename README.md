@@ -13,11 +13,14 @@
 0. 运行前请首先配置api_key（参见群内信息，或者使用其他OpenAI的API）。
 1. 配置环境：`pip install -r requirements.txt`。
 2.进入项目主目录：`cd app`
-3. 3. 运行 [start_server.py](/app/start_server.py) 即可：`python start_server.py`。
+3. 运行 [start_server.py](/app/start_server.py) 即可：`python start_server.py`。
+
+修改`main.py`中的`music_gen_model_name`可以切换small和medium模型
 
 **注意：** 不要运行[main.py](/app/main.py)，会造成一些奇怪的错误！
 
-目前默认音频生成模型为 Musicgen-small.
+## 测试模式
+将`main.py`中的`test_mode`设置为True时后端会不导入大模型，可以用于测试
 
 
 ## TO-DO List
