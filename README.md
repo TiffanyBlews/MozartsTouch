@@ -24,6 +24,8 @@
 
 
 ## TO-DO List
+- 增加用户输入提示词功能
+- 删除API中的mode
 - 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
 - ~~将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`~~
 - 部署视频配乐的功能，尝试将 `Video-Llama` 或者 `Video-BLIP2` 整合到我们的项目中。
