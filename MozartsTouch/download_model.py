@@ -2,7 +2,7 @@ import os
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 #设定文件路径
-model_path = "./app/model"
+model_path = "./model"
 
 #如果模型文件不存在
 

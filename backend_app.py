@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 # import uvicorn
 from io import BytesIO
 from PIL import Image
-from pydantic import BaseModel
+# from pydantic import BaseModel
 from pathlib import Path
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 import MozartsTouch
@@ -46,7 +46,7 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
 #上传部分主体
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...), mode: int = Form(...), time: int = Form(...)):
+async def upload_file(file: UploadFile = File(...), time: int = Form(...)):
     '''
     上传图片以进行音乐生成
 
