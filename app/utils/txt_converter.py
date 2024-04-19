@@ -70,8 +70,9 @@ class TxtConverter:
         return converted_result
 
 if __name__ == "__main__":
-    # content = "the image shows a bright star in the center of a galaxy"
-    content = "a wreath hanging from a rope, an album cover inspired, land art, japanese shibari with flowers, hanging from a tree,the empress’ hanging"
+    
+    # content = "a wreath hanging from a rope, an album cover inspired, land art, japanese shibari with flowers, hanging from a tree,the empress’ hanging"
+    content = input()
     txt_con = TxtConverter()
     converted_result = txt_con.txt_converter(content)
     # print(converted_result)
