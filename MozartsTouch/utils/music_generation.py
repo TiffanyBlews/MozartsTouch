@@ -84,7 +84,7 @@ if __name__=="__main__":
     # 测试能否正常生成音乐，保存到当前目录下
     # mgfactory = MusicGeneratorFactory()
     # mg = mgfactory.create_generator(1)
-    mg = MusicGenGenerator("musicgen_medium")
+    mg = MusicGenGenerator("musicgen_small")
     output = mg.generate("cyberpunk electronic dancing music",1)
     with open(app_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

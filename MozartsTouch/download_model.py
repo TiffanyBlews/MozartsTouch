@@ -1,10 +1,3 @@
-'''
-请在运行前进行如下配置：
-1.在app文件夹内设定api_key.ini
-2.确保电脑自身配置足够运行
-'''
-
-import uvicorn
 import os
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
@@ -25,7 +18,7 @@ if not os.path.exists(model_path):
     model.save_pretrained("./app/model/musicgen_small_model")
     processor.save_pretrained("./app/model/musicgen_small_processor")
 
-    print("musicgen_small get\n")
+    print("musicgen_small get daze\n")
 
     #下载musicgen-medium并保存
     processor = AutoProcessor.from_pretrained("facebook/musicgen-medium")
@@ -35,8 +28,6 @@ if not os.path.exists(model_path):
     model.save_pretrained("./app/model/musicgen_medium_model")
     processor.save_pretrained("./app/model/musicgen_medium_processor")
 
-    print("musicgen_medium get\n")
+    print("musicgen_medium get daze\n")
 
 
-
-uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False)

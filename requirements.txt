@@ -1,6 +1,4 @@
 clip_interrogator==0.6.0
-fastapi==0.100.0
-uvicorn==0.22.0
 Pillow==10.0.0
 torch==2.0.1
 transformers==4.31.0
