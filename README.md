@@ -1,34 +1,53 @@
-# Diancai-Backend
-“点彩成乐”大创项目后端工程（开发中）
-
-由于使用fastapi，在本地运行后可以直接访问`http://localhost:3000/docs#/`或者 `http://局域网IP:3000/docs#/`查看文档并测试接口
-单独的API文档见[API.md](API.md)
+# Mozart's Touch
+This is the official implementation of Mozart's Touch: A Lightweight Multi-modal Music Generation Framework Based on Pre-Trained Large Models
 
 ![](logo.png)
 
 项目logo（仮）
 
+## Package Description
+This repository is structured as follows:
+```
+Diancai-Backend
+├─MozartsTouch/: source code for the implementation of Mozart's Touch
+│  ├─model/: pre-trained MusicGen model
+│  ├─static/: static source for test purpose
+│  ├─utils/: source code for the modules
+│  ├─download_model.py: download pre-trained MusicGen model to model/
+│  └─MozartsTouch.py: Main program of Mozart's Touch
+│ outputs/: directory to store generation result music
+│ backend_app.py: program for backend web application of Mozart's Touch
+└─start_server.py: start the backend server of Mozart's Touch
+```
+## Setup
+1. Before running, please configure `api_key.ini` in the following manners:
+   > [OpenAI]
+   >
+   > API_KEY=sk-xxxxxxx
+2. Install dependencies using `pip install -r requirements.txt`.
+3. Run [MozartsTouch/download_model.py](MozartsTouch/download_model.py) to download MusicGen model parameters.
+4. Use [MozartsTouch.MozartsTouch()](MozartsTouch/MozartsTouch.py) to generate music.
 
-## 运行
-0. 运行前请首先配置api_key（参见群内信息，或者使用其他OpenAI的API）。
-1. 配置环境：`pip install -r requirements.txt`。
-2.进入项目主目录：`cd app`
-3. 运行 [start_server.py](/app/start_server.py) 即可：`python start_server.py`。
+To test codes without importing large models, set `test_mode` to `True` in [MozartsTouch.py](MozartsTouch/MozartsTouch.py).
 
-修改`main.py`中的`music_gen_model_name`可以切换small和medium模型
+ Switch between "musicgen_medium" or "musicgen_small" by modifying `music_gen_model_name` in [MozartsTouch.py](MozartsTouch/MozartsTouch.py).
 
-**注意：** 不要运行[main.py](/app/main.py)，会造成一些奇怪的错误！
+## Running as a Web Backend Server
 
-## 测试模式
-将`main.py`中的`test_mode`设置为True时后端会不导入大模型，可以用于测试
+1. Install dependencies using `pip install -r requirements_for_server.txt`.
+2. Configure port number and other parameters in[start_server.py](/app/start_server.py).
+3. Run `python start_server.py`.
+4. Access http://localhost:3000/docs#/ to view the backend documentation and test the APIs.
+
 
 
 ## TO-DO List
 - 增加用户输入提示词功能
-- 删除API中的mode
+- ~~删除API中的mode~~
 - 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
-- ~~将https://github.com/jina-ai/clip-as-service 调试整合到`image_processing.py`~~
 - 部署视频配乐的功能，尝试将 `Video-Llama` 或者 `Video-BLIP2` 整合到我们的项目中。
+- Use `argparse` to call model
+- Add support for other models as an alternative e.g. LLaMa.
 
 
 
