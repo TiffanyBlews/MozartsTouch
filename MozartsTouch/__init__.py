@@ -1,1 +1,1 @@
-from .MozartsTouch import MozartsTouch, import_clip, import_musicgen
+from .MozartsTouch import img_to_music_generate, import_clip, import_musicgen

@@ -63,7 +63,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     output_folder = app_path / "outputs"
 
     img = read_image_from_binary(file.file)
-    result = MozartsTouch.MozartsTouch(img, music_duration, image_recog, music_gen, output_folder)
+    result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
     key_names = ("prompt", "converted_prompt", "result_file_name")
     result_dict =  {key: value for key, value in zip(key_names, result)}
 

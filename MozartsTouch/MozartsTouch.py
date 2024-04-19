@@ -75,7 +75,7 @@ class Entry:
 
         return self.result_file_name
     
-def MozartsTouch(img: Image, music_duration: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./output")):
+def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./output")):
     '''模型核心过程'''
     # 根据输入mode信息获得对应的音乐生成模型类的实例
     # mg = mgs[mode]

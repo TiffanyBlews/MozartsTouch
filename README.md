@@ -26,7 +26,7 @@ Diancai-Backend
    > API_KEY=sk-xxxxxxx
 2. Install dependencies using `pip install -r requirements.txt`.
 3. Run [MozartsTouch/download_model.py](MozartsTouch/download_model.py) to download MusicGen model parameters.
-4. Use [MozartsTouch.MozartsTouch()](MozartsTouch/MozartsTouch.py) to generate music.
+4. Use [MozartsTouch.img_to_music_generate()](MozartsTouch/MozartsTouch.py) to generate music.
 
 To test codes without importing large models, set `test_mode` to `True` in [MozartsTouch.py](MozartsTouch/MozartsTouch.py).
 
