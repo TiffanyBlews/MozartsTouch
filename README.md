@@ -3,7 +3,7 @@ This is the official implementation of Mozart's Touch: A Lightweight Multi-modal
 
 ![](logo.png)
 
-项目logo（仮）
+![](architecture.png)
 
 ## Package Description
 This repository is structured as follows:
@@ -14,7 +14,7 @@ Diancai-Backend
 │  ├─static/: static source for test purpose
 │  ├─utils/: source code for the modules
 │  ├─download_model.py: download pre-trained MusicGen model to model/
-│  └─MozartsTouch.py: Main program of Mozart's Touch
+│  └─main.py: Main program of Mozart's Touch
 │ outputs/: directory to store generation result music
 │ backend_app.py: program for backend web application of Mozart's Touch
 └─start_server.py: start the backend server of Mozart's Touch
@@ -25,12 +25,12 @@ Diancai-Backend
    >
    > API_KEY=sk-xxxxxxx
 2. Install dependencies using `pip install -r requirements.txt`.
-3. Run [MozartsTouch/download_model.py](MozartsTouch/download_model.py) to download MusicGen model parameters.
-4. Use [MozartsTouch.img_to_music_generate()](MozartsTouch/MozartsTouch.py) to generate music.
+3. Run [download_model.py](MozartsTouch/download_model.py) to download MusicGen model parameters.
+4. Use [MozartsTouch.img_to_music_generate()](MozartsTouch/main.py) to generate music.
 
-To test codes without importing large models, set `test_mode` to `True` in [MozartsTouch.py](MozartsTouch/MozartsTouch.py).
+To test codes without importing large models, set `test_mode` to `True` in [main.py](MozartsTouch/main.py).
 
- Switch between "musicgen_medium" or "musicgen_small" by modifying `music_gen_model_name` in [MozartsTouch.py](MozartsTouch/MozartsTouch.py).
+ Switch between "musicgen_medium" or "musicgen_small" by modifying `music_gen_model_name` in [main.py](MozartsTouch/main.py).
 
 ## Running as a Web Backend Server
 
