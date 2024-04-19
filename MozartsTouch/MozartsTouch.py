@@ -36,14 +36,14 @@ def import_musicgen():
 
 class Entry:
     '''每个Entry代表一次用户输入，然后调用自己的方法对输入进行处理以得到生成结果'''
-    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, time: int) -> None:
+    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, music_duration: int) -> None:
         self.img=img
         self.txt = None
         self.txt_con = TxtConverter()
         self.converted_txt = None
         self.image_recog = image_recog # 使用传入的图像识别模型对象
         self.music_gen = music_gen  # 使用传入的音乐生成对象
-        self.time = time
+        self.music_duration = music_duration
         self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") # 记录用户上传时间作为标识符
     
     def img2txt(self):
@@ -59,7 +59,7 @@ class Entry:
 
     def txt2music(self):
         '''根据文本进行音乐生成，获取生成的音乐的BytesIO'''
-        self.music_bytes_io = self.music_gen.generate(self.converted_txt, self.time)
+        self.music_bytes_io = self.music_gen.generate(self.converted_txt, self.music_duration)
 
     def save_to_file(self, output_folder:Path):
         '''将音乐保存到`/outputs`中，文件名为用户上传时间的时间戳'''
@@ -75,13 +75,13 @@ class Entry:
 
         return self.result_file_name
     
-def MozartsTouch(img: Image, time: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./output")):
+def MozartsTouch(img: Image, music_duration: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./output")):
     '''模型核心过程'''
     # 根据输入mode信息获得对应的音乐生成模型类的实例
     # mg = mgs[mode]
 
     # 根据用户输入创建一个类，并传入图像识别和音乐生成模型的实例
-    entry = Entry(img, image_recog, music_gen, time)
+    entry = Entry(img, image_recog, music_gen, music_duration)
 
     # 图片转文字
     if test_mode:

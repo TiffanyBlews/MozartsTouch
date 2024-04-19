@@ -46,14 +46,13 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
 #上传部分主体
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...), time: int = Form(...)):
+async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...)):
     '''
     上传图片以进行音乐生成
 
     Parameters:
     - file: 图片文件，Content-Type: image/*
-    - mode: 已弃用
-    - time: 指定生成时间，请输入整数，以秒为单位
+    - music_duration: 指定生成时间，请输入整数，以秒为单位
 
     Return: 
     - prompt: 图片转文本结果
@@ -64,7 +63,7 @@ async def upload_file(file: UploadFile = File(...), time: int = Form(...)):
     output_folder = app_path / "outputs"
 
     img = read_image_from_binary(file.file)
-    result = MozartsTouch.MozartsTouch(img, time, image_recog, music_gen, output_folder)
+    result = MozartsTouch.MozartsTouch(img, music_duration, image_recog, music_gen, output_folder)
     key_names = ("prompt", "converted_prompt", "result_file_name")
     result_dict =  {key: value for key, value in zip(key_names, result)}
 
