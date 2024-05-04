@@ -80,7 +80,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     img = read_image_from_binary(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
 
-    if music_gen.model_name.startswith("musicgen"):
+    if not music_gen.model_name.startswith("suno"):
         prefix = 'http://localhost:3000/music/'  # 将musicgen生成的音乐文件名包装成URL
         filename_with_prefix = prefix + result[2]
 
