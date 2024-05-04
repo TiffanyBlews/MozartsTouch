@@ -16,14 +16,8 @@ from pathlib import Path
 app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
 import MozartsTouch
 
-# class ResultModel(BaseModel):
-#     '''定义响应体格式'''
-#     prompt: str
-#     converted_prompt: str
-#     result_file_name: str
-
 class MusicGenerators: 
-    '''需要用到哪个MusicGenerator再导入，同时防止多次导入模型'''
+    '''惰性加载，需要用到哪个MusicGenerator再导入，同时记录下来，防止多次导入同一个模型'''
     music_gens = {}
     def get_music_gen(self, mode):
         if self.music_gens.keys().__contains__(mode):
@@ -65,12 +59,13 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     Parameters:
     - file: 图片文件，Content-Type: image/*
     - music_duration: 指定生成时间，请输入整数，以秒为单位
-    - mode: 0为测试模式，1为Suno AI，1为MusicGen-Small，2为MusicGen-Medium
+    - mode: 0为测试模式，1为Suno AI，2为MusicGen-Small，3为MusicGen-Medium
 
     Return: 
     - prompt: 图片转文本结果
     - converted_prompt: 用于生成音乐的提示词文本
-    - result_file_name: 生成的音频文件名，使用GET方法访问"主机名/music/{result_file_name}"获取音频文件
+    - result_file_url: 生成的音频URL，使用GET方法访问"result_file_url"获取音频文件。
+        如果使用Suno AI会一次生成两个音频，此时该值为字符串列表
     '''
     print("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
@@ -97,7 +92,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
 @app.get("/music/{result_file_name}")
 async def get_music(result_file_name: str):
     '''
-    获取对应名称的音频文件
+    获取/outputs目录下对应名称的文件
 
     Return: 
     - 音频文件
