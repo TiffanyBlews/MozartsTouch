@@ -22,9 +22,18 @@ import MozartsTouch
 #     converted_prompt: str
 #     result_file_name: str
 
-
+class MusicGens:
+    music_gens = {}
+    def get_music_gen(self, mode):
+        if self.music_gens.keys().__contains__(mode):
+            music_gen = self.music_gens[mode]
+        else:
+            music_gen = MozartsTouch.import_musicgen(mode)
+            self.music_gens[mode] = music_gen
+        return music_gen
+        
+mgs = MusicGens()
 image_recog = MozartsTouch.import_clip()
-music_gen = MozartsTouch.import_musicgen()
 
 
 # 创建后端应用
@@ -48,13 +57,14 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
 #上传部分主体
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...)):
+async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...), mode: int = Form(...)):
     '''
     上传图片以进行音乐生成
 
     Parameters:
     - file: 图片文件，Content-Type: image/*
     - music_duration: 指定生成时间，请输入整数，以秒为单位
+    - mode: 0为测试模式，1为Suno AI，1为MusicGen-Small，2为MusicGen-Medium
 
     Return: 
     - prompt: 图片转文本结果
@@ -64,10 +74,20 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     print("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
 
+    music_gen = mgs.get_music_gen(mode)
+
     img = read_image_from_binary(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
-    key_names = ("prompt", "converted_prompt", "result_file_name")
+
+    prefix = 'http://localhost:3000/music/'  # 这里用你想要的固定前缀
+    filename_with_prefix = (prefix + result[2]) if isinstance(result[2], str) else (prefix + filename for filename in result[2])
+
+    result = (*result[:2], filename_with_prefix)
+
+    key_names = ("prompt", "converted_prompt", "result_file_url")
+    
     result_dict =  {key: value for key, value in zip(key_names, result)}
+    print(result_dict)
 
     return result_dict
 

@@ -1,22 +1,46 @@
 import io
 from pathlib import Path
-import time
+from typing import Tuple
 
-import torch
+from .MusicGenerator.music_gen import MusicGen
+from .MusicGenerator.suno_ai import Suno
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+'''
+Because of Python's feature of chain importing (https://stackoverflow.com/questions/5226893/understanding-a-chain-of-imports-in-python)
+you need to use these lines below instead of those above to be able to run the test code after `if __name__=="__main__"`
+'''
+# from MusicGenerator.music_gen import MusicGen
+# from MusicGenerator.suno_ai import Suno
+
 
 app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
 
 from abc import ABC, abstractmethod
 
-class MusicGenerator(ABC):
+
+class AbstractSingletonMeta(type, ABC):
+    '''
+    单例模式抽象基类元类，保证音乐生成类只有一个实例
+    '''
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
+    
+
+class MusicGenerator(metaclass=AbstractSingletonMeta):
     '''
     音乐生成模型抽象基类，增加模型类时需要继承此类并实现generate方法
-    详情请搜索面向对象编程，或参考https://python3-cookbook.readthedocs.io/zh-cn/latest/c08/p12_define_interface_or_abstract_base_class.html
     '''
+    @property
     @abstractmethod
-    def generate(self, text: str, music_duration: int) ->io.BytesIO:
+    def model_name(self):
+        pass
+    
+    @abstractmethod
+    def generate(self, text: str, music_duration: int) ->(io.BytesIO | Tuple):
         """
         根据传入文本和音乐时长生成音乐
 
@@ -29,21 +53,16 @@ class MusicGenerator(ABC):
         """
         pass
 
-# class MusicGeneratorFactory:
-#     '''
-#     为了便于测试调换模型，采用工厂模式获取音乐生成模型实例
-#     '''
-#     def create_generator(self, mode) -> MusicGenerator:
-#         '''获取音乐生成模型实例，0为测试，1为MusicGen'''
-#         generator_dict={
-#             0: TestGenerator,
-#             1: MusicGenGenerator
-#         }
-#         return generator_dict[mode]()
+        
 
 class TestGenerator(MusicGenerator):
-    def __init__(self, model_name="test") -> None:
-        super().__init__()
+    def __init__(self) -> None:
+        self._model_name = "test"
+
+    @property
+    def model_name(self):
+        return self._model_name
+
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         '''测试用，只会返回固定的*BONK*声音文件'''
         print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
@@ -51,40 +70,71 @@ class TestGenerator(MusicGenerator):
         test_mp3 = open(test_path,"rb").read()
         return io.BytesIO(test_mp3)
 
-from transformers import AutoProcessor, MusicgenForConditionalGeneration
-import scipy
 
-class MusicGenGenerator(MusicGenerator):
-    def __init__(self, model_name = "musicgen_small") -> None:
-        self.processor = AutoProcessor.from_pretrained(app_path / "model" / (model_name+"_processor"))
-        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / (model_name+"_model")).to(device)
-        self.sampling_rate = self.model.config.audio_encoder.sampling_rate
+class MusicGenSmallGenerator(MusicGenerator):
+    def __init__(self) -> None:
+        self.model = MusicGen("musicgen_small")
+        self._model_name = "musicgen_small"
+    
+    @property
+    def model_name(self):
+        return self._model_name
 
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
-        '''
-        使用 MusicGen 模型生成音乐
-        '''
-        start_time = time.time()
+        return self.model.generate(text, music_duration)
+    
+class MusicGenMediumGenerator(MusicGenerator):
+    def __init__(self) -> None:
+        self.model = MusicGen("musicgen_medium")
+        self._model_name = "musicgen_medium"
 
-        inputs = self.processor(
-            text=[text],
-            padding=True,
-            return_tensors="pt",
-        ).to(device)
-        audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) # music_duration为秒数，256token = 5s 
-
-        # 将生成的音乐数据转换为BytesIO并返回
-        wav_file_data = io.BytesIO()
-        scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].cpu().numpy())
-        print(f"[TIME] taken for txt2music: {time.time() - start_time :.2f}s")
-        return wav_file_data
+    @property
+    def model_name(self):
+        return self._model_name
+    
+    def generate(self, text: str, music_duration: int) -> io.BytesIO:
+        return self.model.generate(text, music_duration)
 
 
-if __name__=="__main__":
-    # 测试能否正常生成音乐，保存到当前目录下
-    # mgfactory = MusicGeneratorFactory()
-    # mg = mgfactory.create_generator(1)
-    mg = MusicGenGenerator("musicgen_small")
-    output = mg.generate("cyberpunk electronic dancing music",1)
+class SunoGenerator(MusicGenerator):
+    def __init__(self) -> None:
+        self._model_name = "Suno"
+        pass
+
+    @property
+    def model_name(self):
+        return self._model_name
+    
+    def generate(self, text: str, music_duration: int) -> Tuple:
+        return Suno.generate(text)
+
+
+class MusicGeneratorFactory:
+    '''
+    为了便于测试调换模型，采用工厂模式获取音乐生成模型实例
+    '''
+    generator_classes = {
+        "test": TestGenerator,
+        "musicgen_small": MusicGenSmallGenerator,
+        "musicgen_medium": MusicGenMediumGenerator,
+        "suno": SunoGenerator,
+    }
+
+    @classmethod
+    def create_music_generator(cls, music_gen_model_name: str) -> MusicGenerator:
+        generator_class = cls.generator_classes.get(music_gen_model_name)
+        if generator_class:
+            return generator_class()
+        else:
+            raise ValueError("Unsupported music_gen_model_name")
+
+music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen_small")
+# music_gen_medium = MusicGeneratorFactory.create_music_generator("musicgen_medium")
+# suno_ai = MusicGeneratorFactory.create_music_generator("suno")
+
+if __name__=="__main__":    
+
+    output = music_gen_small.generate("cyberpunk electronic dancing music",1)
+    print(music_gen_small.model_name)
     with open(app_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())
