@@ -5,7 +5,7 @@ import configparser
 
 from sympy import content
 
-app_path = Path(__file__).resolve().parent.parent  # 项目根目录（`/app`）
+module_path = Path(__file__).resolve().parent.parent  # module_path为模块根目录（`/MozartsTouch`）
 
 class TxtConverter:
     def __init__(self):
@@ -13,7 +13,7 @@ class TxtConverter:
 
     def load_api_key(self):
         config = configparser.ConfigParser()
-        config_file = app_path / 'api_key.ini'
+        config_file = module_path / 'api_key.ini'
         config.read(config_file)
 
         api_key = config['OpenAI'].get('API_KEY')

@@ -3,7 +3,7 @@ import numpy as np
 from pydub import AudioSegment
 from pathlib import Path
 
-app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
+module_path = Path(__file__).resolve().parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
 def normalize_volume(audio_path):
     # 读取BytesIO对象中的音频数据
@@ -37,6 +37,6 @@ def normalize_volume(audio_path):
     return normalized_audio
 
 if __name__ == "__main__":
-    normalized_audio = normalize_volume(app_path/"static"/ "BONK.mp3")
-    # AudioSegment.from_file(app_path/"static"/ "BONK.mp3")
+    normalized_audio = normalize_volume(module_path/"static"/ "BONK.mp3")
+    # AudioSegment.from_file(module_path/"static"/ "BONK.mp3")
 

@@ -14,13 +14,14 @@ Diancai-Backend
 │  ├─static/: static source for test purpose
 │  ├─utils/: source code for the modules
 │  ├─download_model.py: download pre-trained MusicGen model to model/
+│  ├─api_key.ini: OpenAI API key
 │  └─main.py: Main program of Mozart's Touch
 │ outputs/: directory to store generation result music
 │ backend_app.py: program for backend web application of Mozart's Touch
 └─start_server.py: start the backend server of Mozart's Touch
 ```
 ## Setup
-1. Before running, please configure `api_key.ini` in the following manners:
+1. Before running, please configure `api_key.ini` in the `MozartsTouch/`  in the following manners:
    > [OpenAI]
    >
    > API_KEY=sk-xxxxxxx

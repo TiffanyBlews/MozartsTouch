@@ -13,7 +13,7 @@ from io import BytesIO
 from PIL import Image
 # from pydantic import BaseModel
 from pathlib import Path
-app_path = Path(__file__).parent# app_path为项目根目录（`/app`）
+app_path = Path(__file__).parent# app_path为项目根目录（`/`）
 import MozartsTouch
 
 class MusicGenerators: 

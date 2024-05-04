@@ -13,7 +13,7 @@ you need to use these lines below instead of those above to be able to run the t
 # from MusicGenerator.suno_ai import Suno
 
 
-app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
+module_path = Path(__file__).resolve().parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
 from abc import ABC, abstractmethod
 
@@ -66,7 +66,7 @@ class TestGenerator(MusicGenerator):
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         '''测试用，只会返回固定的*BONK*声音文件'''
         print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
-        test_path = app_path/"static"/"BONK.mp3"
+        test_path = module_path/"static"/"BONK.mp3"
         test_mp3 = open(test_path,"rb").read()
         return io.BytesIO(test_mp3)
 
@@ -136,5 +136,5 @@ if __name__=="__main__":
 
     output = music_gen_small.generate("cyberpunk electronic dancing music",1)
     print(music_gen_small.model_name)
-    with open(app_path / 'musicgen.wav', 'wb') as f:
+    with open(module_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

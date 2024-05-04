@@ -5,12 +5,12 @@ import scipy
 import torch
 from io import BytesIO
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-app_path = Path(__file__).resolve().parent.parent.parent # app_path为项目根目录（`/app`）
+module_path = Path(__file__).resolve().parent.parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
 class MusicGen:
     def __init__(self, model_name = "musicgen_small") -> None:
-        self.processor = AutoProcessor.from_pretrained(app_path / "model" / (model_name+"_processor"))
-        self.model = MusicgenForConditionalGeneration.from_pretrained(app_path / "model" / (model_name+"_model")).to(device)
+        self.processor = AutoProcessor.from_pretrained(module_path / "model" / (model_name+"_processor"))
+        self.model = MusicgenForConditionalGeneration.from_pretrained(module_path / "model" / (model_name+"_model")).to(device)
         self.sampling_rate = self.model.config.audio_encoder.sampling_rate
 
     def generate(self, text: str, music_duration: int) -> BytesIO:
@@ -35,5 +35,5 @@ class MusicGen:
 if __name__=="__main__":    
     music_gen_small = MusicGen()
     output = music_gen_small.generate("cyberpunk electronic dancing music",1)
-    with open(app_path / 'music_gen_test.wav', 'wb') as f:
+    with open(module_path / 'music_gen_test.wav', 'wb') as f:
         f.write(output.getvalue())

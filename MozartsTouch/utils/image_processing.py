@@ -4,7 +4,7 @@ import torch.cuda
 from pathlib import Path
 import time
 
-app_path = Path(__file__).resolve().parent.parent # app_path为项目根目录（`/app`）
+module_path = Path(__file__).resolve().parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
 class ImageRecognization:
     def __init__(self) -> None:
@@ -44,7 +44,7 @@ class ImageRecognization:
 
 if __name__=="__main__":
     # 打开测试图像文件
-    test_image = app_path / "static" / "test.jpg"
+    test_image = module_path / "static" / "test.jpg"
     image =Image.open(test_image)
 
     # 测试能否识别测试图像
