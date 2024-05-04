@@ -21,7 +21,7 @@ Diancai-Backend
 └─start_server.py: start the backend server of Mozart's Touch
 ```
 ## Setup
-1. Before running, please configure `api_key.ini` in the `MozartsTouch/`  in the following manners:
+1. Before running, please configure `api_key.ini` in the `/MozartsTouch/`  in the following manners:
    > [OpenAI]
    >
    > API_KEY=sk-xxxxxxx
