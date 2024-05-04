@@ -28,7 +28,7 @@ def import_clip():
 
     return ir
 
-def import_musicgen(mode):
+def import_music_generator(mode):
     '''导入音乐生成模型'''
     models = {
         0: "test",
@@ -121,7 +121,7 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
     
 if __name__ == "__main__":
     image_recog = import_clip()
-    music_gen = import_musicgen(2)
+    music_gen = import_music_generator(2)
 
     output_folder = cwd / "outputs"
     img = Image.open(cwd / "static" / "test.jpg")

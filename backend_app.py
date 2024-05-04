@@ -22,17 +22,17 @@ import MozartsTouch
 #     converted_prompt: str
 #     result_file_name: str
 
-class MusicGens:
+class MusicGenerators:
     music_gens = {}
     def get_music_gen(self, mode):
         if self.music_gens.keys().__contains__(mode):
             music_gen = self.music_gens[mode]
         else:
-            music_gen = MozartsTouch.import_musicgen(mode)
+            music_gen = MozartsTouch.import_music_generator(mode)
             self.music_gens[mode] = music_gen
         return music_gen
         
-mgs = MusicGens()
+mgs = MusicGenerators()
 image_recog = MozartsTouch.import_clip()
 
 
