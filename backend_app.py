@@ -22,7 +22,8 @@ import MozartsTouch
 #     converted_prompt: str
 #     result_file_name: str
 
-class MusicGenerators:
+class MusicGenerators: 
+    '''需要用到哪个MusicGenerator再导入，同时防止多次导入模型'''
     music_gens = {}
     def get_music_gen(self, mode):
         if self.music_gens.keys().__contains__(mode):
@@ -79,10 +80,11 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     img = read_image_from_binary(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
 
-    prefix = 'http://localhost:3000/music/'  # 这里用你想要的固定前缀
-    filename_with_prefix = (prefix + result[2]) if isinstance(result[2], str) else (prefix + filename for filename in result[2])
+    if music_gen.model_name.startswith("musicgen"):
+        prefix = 'http://localhost:3000/music/'  # 将musicgen生成的音乐文件名包装成URL
+        filename_with_prefix = prefix + result[2]
 
-    result = (*result[:2], filename_with_prefix)
+        result = (*result[:2], filename_with_prefix)
 
     key_names = ("prompt", "converted_prompt", "result_file_url")
     
