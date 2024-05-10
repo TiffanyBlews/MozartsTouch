@@ -116,6 +116,7 @@ class MusicGeneratorFactory:
     generator_classes = {
         "test": TestGenerator,
         "musicgen-large": MusicGenLargeGenerator,
+        "musicgen-medium": MusicGenMediumGenerator,
         "suno.ai": SunoGenerator,
     }
 
