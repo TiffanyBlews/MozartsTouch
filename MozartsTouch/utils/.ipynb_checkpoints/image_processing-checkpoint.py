@@ -11,7 +11,7 @@ class ImageRecognization:
         '''初始化图像识别配置'''
         ci_config = Config()
         ci_config.clip_model_name = "ViT-H-14/laion2b_s32b_b79k"
-        ci_config.caption_model_name = "blip-large"
+        ci_config.caption_model_name = "blip-base"
         ci_config.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         ci_config.blip_offload = False if torch.cuda.is_available() else True
         ci_config.chunk_size = 1024

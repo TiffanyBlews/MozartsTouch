@@ -105,7 +105,7 @@ class SunoGenerator(MusicGenerator):
     def model_name(self):
         return self._model_name
     
-    def generate(self, text: str, music_duration: int):
+    def generate(self, text: str, music_duration: int) -> Tuple:
         return Suno.generate(text)
 
 
@@ -115,8 +115,9 @@ class MusicGeneratorFactory:
     '''
     generator_classes = {
         "test": TestGenerator,
-        "musicgen-large": MusicGenLargeGenerator,
-        "suno.ai": SunoGenerator,
+        "musicgen_small": MusicGenLargeGenerator,
+        "musicgen_medium": MusicGenMediumGenerator,
+        "suno": SunoGenerator,
     }
 
     @classmethod
@@ -127,11 +128,13 @@ class MusicGeneratorFactory:
         else:
             raise ValueError("Unsupported music_gen_model_name")
 
-music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-large")
+music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen_small")
+# music_gen_medium = MusicGeneratorFactory.create_music_generator("musicgen_medium")
+# suno_ai = MusicGeneratorFactory.create_music_generator("suno")
 
 if __name__=="__main__":    
 
-    output = music_gen_small.generate("cyberpunk electronic dancing music", 1)
+    output = music_gen_small.generate("cyberpunk electronic dancing music",1)
     print(music_gen_small.model_name)
     with open(app_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

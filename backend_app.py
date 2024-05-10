@@ -13,7 +13,7 @@ from io import BytesIO
 from PIL import Image
 # from pydantic import BaseModel
 from pathlib import Path
-app_path = Path(__file__).parent# app_path为项目根目录（`/`）
+app_path = Path(__file__).parent # app_path为项目根目录（`/app`）
 import MozartsTouch
 
 class MusicGenerators: 
@@ -34,7 +34,8 @@ image_recog = MozartsTouch.import_clip()
 # 创建后端应用
 app = FastAPI(title='点彩成乐',description='“点彩成乐”项目后端')
 
-origins = ["http://localhost:5173"]
+origins = ["http://localhost:5173",
+           "http://localhost:6006"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,7 +60,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     Parameters:
     - file: 图片文件，Content-Type: image/*
     - music_duration: 指定生成时间，请输入整数，以秒为单位
-    - mode: 0为测试模式，1为Suno AI，2为MusicGen-Small，3为MusicGen-Medium
+    - mode: 0为测试模式，1为MusicGen-large，2为Suno-AI
 
     Return: 
     - prompt: 图片转文本结果
@@ -75,14 +76,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     img = read_image_from_binary(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
 
-    if not music_gen.model_name.startswith("suno"):
-        prefix = 'http://localhost:3000/music/'  # 将musicgen生成的音乐文件名包装成URL
-        filename_with_prefix = prefix + result[2]
-
-        result = (*result[:2], filename_with_prefix)
-
-    key_names = ("prompt", "converted_prompt", "result_file_url")
-    
+    key_names = ("prompt", "converted_prompt", "result_file_name", "mode")
     result_dict =  {key: value for key, value in zip(key_names, result)}
     print(result_dict)
 
@@ -97,7 +91,7 @@ async def get_music(result_file_name: str):
     Return: 
     - 音频文件
     '''
-    file_full_path = app_path / "outputs"/ result_file_name
+    file_full_path = app_path / "outputs" / result_file_name
     return FileResponse(file_full_path)
 
 @app.get("/")

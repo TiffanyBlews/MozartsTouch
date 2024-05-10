@@ -1,7 +1,7 @@
 import time
 import requests
 from io import BytesIO
-base_url = 'https://suno-api-psi-one.vercel.app/'
+base_url = 'http://localhost:3000/'
 
 
 def custom_generate_audio(payload):
@@ -45,11 +45,12 @@ class Suno:
         print(f"ids: {ids}")
 
         for _ in range(60):
-            data = get_audio_information(ids)
-            if data[0]["status"] == 'streaming':
-                print(f"{data[0]['id']} ==> {data[0]['audio_url']}")
-                print(f"{data[1]['id']} ==> {data[1]['audio_url']}")
-                return (data[0]['audio_url'], data[1]['audio_url'])
+            try:
+                data = get_audio_information(ids)
+                if data[1]["status"] == 'streaming':
+                    print(f"{data[1]['id']} ==> {data[1]['audio_url']}")
+                    return data[1]['audio_url']
+            except: continue
             # sleep 5s
             time.sleep(5)
 

@@ -32,9 +32,9 @@ def import_music_generator(mode):
     '''导入音乐生成模型'''
     models = {
         0: "test",
-        1: "musicgen-large", # MusicGenLargeGenerator,
-        2: "suno.ai", # SunoGenerator,
-        3: "musicgen-medium", # MusicGenMediumGenerator,
+        1: "suno", # SunoGenerator,
+        2: "musicgen-large", # MusicGenLargeGenerator,
+        3: "musicgen_medium", # MusicGenMediumGenerator,
     }
 
     start_time = time.time()
@@ -57,7 +57,7 @@ class Entry:
         self.music_gen = music_gen  # 使用传入的音乐生成对象
         self.music_duration = music_duration
         self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") # 记录用户上传时间作为标识符
-        self.result_file_name = None
+        self.result_urls = None
         self.music_bytes_io = None
 
     def img2txt(self):
@@ -74,13 +74,14 @@ class Entry:
     def txt2music(self):
         '''根据文本进行音乐生成，获取生成的音乐的BytesIO或URL'''
         if self.music_gen.model_name.startswith("Suno"):
-            self.result_file_name = self.music_gen.generate(self.converted_txt, self.music_duration)
+            self.result_urls = self.music_gen.generate(self.converted_txt, self.music_duration)
         else:
             self.music_bytes_io = self.music_gen.generate(self.converted_txt, self.music_duration)
 
     def save_to_file(self, output_folder:Path):
         '''将音乐保存到`/outputs`中，文件名为用户上传时间的时间戳'''
         output_folder.mkdir(parents=True, exist_ok=True)
+
         self.result_file_name = f"{self.timestamp}.wav"
         file_path = output_folder / self.result_file_name
 
@@ -89,8 +90,6 @@ class Entry:
 
         print(f"音乐已保存至 {file_path}")
 
-        prefix = 'http://localhost:3001/music/'  # 将musicgen生成的音乐文件名包装成URL
-        self.result_file_name = prefix + self.result_file_name
         return self.result_file_name
     
 def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./outputs")):
@@ -114,11 +113,11 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
     #文本生成音乐
     entry.txt2music()
 
-    if not music_gen.model_name.startswith("Suno"):
-        print("Here.")
+    if music_gen.model_name.startswith("Suno"):
+        return (entry.txt, entry.converted_txt, entry.result_urls)
+    else:
         entry.save_to_file(output_folder)
-
-    return (entry.txt, entry.converted_txt, entry.result_file_name, music_gen.model_name)
+        return (entry.txt, entry.converted_txt, entry.result_file_name)
     
 if __name__ == "__main__":
     image_recog = import_clip()
