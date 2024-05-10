@@ -34,8 +34,7 @@ image_recog = MozartsTouch.import_clip()
 # 创建后端应用
 app = FastAPI(title='点彩成乐',description='“点彩成乐”项目后端')
 
-origins = ["http://localhost:5173",
-           "http://localhost:6006"]
+origins = ["http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
