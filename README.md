@@ -31,7 +31,17 @@ Diancai-Backend
 
 To test codes without importing large models, set `test_mode` to `True` in [main.py](MozartsTouch/main.py).
 
- Switch between "musicgen_medium" or "musicgen_small" by modifying `music_gen_model_name` in [main.py](MozartsTouch/main.py).
+ Switch between "musicgen_medium" or "musicgen_small" by modifying `music_gen_model_name` (actually from index in `import_music_generator(mode: int)`) in [main.py](MozartsTouch/main.py).
+
+## Running as a Command Line Tool
+With the setup complete, you can now run the following command to generate music:
+```bash
+python main.py
+```
+or debug with no model imported:
+```bash
+python main.py --test_mode
+```
 
 ## Running as a Web Backend Server
 
