@@ -13,8 +13,8 @@ you need to use these lines below instead of those above to be able to run the t
 import datetime
 from PIL import Image
 import time
+import argparse
 
-test_mode = False # True时关闭img2txt功能，节省运行资源，用于调试程序
 cwd = Path(__file__).resolve().parent 
 
 def import_clip():
@@ -28,7 +28,7 @@ def import_clip():
 
     return ir
 
-def import_music_generator(mode):
+def import_music_generator(mode: int):
     '''导入音乐生成模型'''
     models = {
         0: "test",
@@ -120,8 +120,18 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
         return (entry.txt, entry.converted_txt, entry.result_file_name)
     
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Mozart\'s Touch: Multi-modal Music Generation Framework')
+
+    parser.add_argument('-d', '--test', help='Test mode', action='store_true')
+    # parser.add_argument('-m', '--mode', type=int, default=1, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
+    parser.add_argument('-i', '--index', type=int, default=2, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
+    
+    args = parser.parse_args()
+    test_mode = args.test # True时关闭img2txt功能，节省运行资源，用于调试程序
+    index = args.index
+
     image_recog = import_clip()
-    music_gen = import_music_generator(2)
+    music_gen = import_music_generator(index)
 
     output_folder = cwd / "outputs"
     img = Image.open(cwd / "static" / "test.jpg")
