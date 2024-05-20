@@ -15,6 +15,7 @@ from PIL import Image
 from pathlib import Path
 app_path = Path(__file__).parent # app_path为项目根目录（`/app`）
 import MozartsTouch
+import cv2 as cv
 
 class MusicGenerators: 
     '''惰性加载，需要用到哪个MusicGenerator再导入，同时记录下来，防止多次导入同一个模型'''
@@ -49,6 +50,13 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
     img = Image.open(binary)
     return img
 
+def read_video_from_binary(binary: BytesIO) :
+    '''将二进制输入转换为PIL Image对象'''
+
+    img = Image.open(binary)
+    return img
+
+
 #上传部分主体
 
 @app.post("/upload")
@@ -66,6 +74,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     - converted_prompt: 用于生成音乐的提示词文本
     - result_file_url: 生成的音频URL，使用GET方法访问"result_file_url"获取音频文件。
         如果使用Suno AI会一次生成两个音频，此时该值为字符串列表
+    - mode: 生成采用的模式
     '''
     print("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
@@ -76,6 +85,33 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
 
     key_names = ("prompt", "converted_prompt", "result_file_name", "mode")
+    result_dict =  {key: value for key, value in zip(key_names, result)}
+    print(result_dict)
+
+    return result_dict
+
+@app.post("/video")
+async def upload_file(file: UploadFile = File(...)):
+
+    print("Request Received Successfully, Processing...")
+    output_folder = app_path / "outputs"
+    video_path  = app_path / "videos" / file.filename
+
+    music_gen = mgs.get_music_gen(1)
+
+    # 将视频保存至本地，然后读取视频帧
+    contents = await file.read()
+    with open(video_path, "wb") as f: 
+        f.write(contents)
+
+    vidcapture = cv.VideoCapture(video_path)
+    fps = vidcapture.get(cv.CAP_PROP_FPS)
+    totalNoFrames = vidcapture.get(cv.CAP_PROP_FRAME_COUNT)
+    music_duration = totalNoFrames // fps
+
+    result = MozartsTouch.video_to_music_generate(video_path, music_duration, music_gen, output_folder)
+
+    key_names = ("prompt", "converted_prompt", "result_file_name")
     result_dict =  {key: value for key, value in zip(key_names, result)}
     print(result_dict)
 

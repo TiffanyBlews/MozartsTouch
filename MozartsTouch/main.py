@@ -2,6 +2,7 @@ from pathlib import Path
 from .utils.image_processing import ImageRecognization
 from .utils.music_generation import MusicGenerator,  MusicGeneratorFactory
 from .utils.txt_converter import TxtConverter
+from .utils.preprocess_single import PreProcessVideos
 
 '''
 Because of Python's feature of chain importing (https://stackoverflow.com/questions/5226893/understanding-a-chain-of-imports-in-python)
@@ -48,11 +49,12 @@ def import_music_generator(mode):
 
 class Entry:
     '''每个Entry代表一次用户输入，然后调用自己的方法对输入进行处理以得到生成结果'''
-    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, music_duration: int) -> None:
+    def __init__(self, img: Image, image_recog:ImageRecognization, music_gen: MusicGenerator, music_duration: int, addtxt:str) -> None:
         self.img=img
         self.txt = None
         self.txt_con = TxtConverter()
         self.converted_txt = None
+        self.addtxt = addtxt#追加文本输入
         self.image_recog = image_recog # 使用传入的图像识别模型对象
         self.music_gen = music_gen  # 使用传入的音乐生成对象
         self.music_duration = music_duration
@@ -67,9 +69,13 @@ class Entry:
     def test_img2txt(self):
         '''测试用，跳过图像识别'''
         self.txt = self.image_recog.test_img2txt(self.img)
+    
+    def viode2txt(self, video_path):
+        self.txt = self.image_recog.video2txt(video_path)
+
         
     def txt_converter(self):
-        self.converted_txt = self.txt_con.txt_converter(self.txt)
+        self.converted_txt = self.txt_con.txt_converter(self.txt, self.addtxt)#追加一个附加输入，具体改动参见txt_converter
 
     def txt2music(self):
         '''根据文本进行音乐生成，获取生成的音乐的BytesIO或URL'''
@@ -119,10 +125,30 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
         entry.save_to_file(output_folder)
 
     return (entry.txt, entry.converted_txt, entry.result_file_name, music_gen.model_name)
+
+import argparse
+def video_to_music_generate(video_path: str, music_duration: int, music_gen: MusicGenerator, output_folder=Path("./outputs")):
+    '''模型核心过程'''
+    # 根据输入mode信息获得对应的音乐生成模型类的实例
+    # mg = mgs[mode]
+
+    # 根据用户输入创建一个类，并传入图像识别和音乐生成模型的实例
+    entry = Entry(None, None, music_gen, music_duration)
+
+    entry.txt = PreProcessVideos.viode2txt(video_path)
+
+    # 文本优化
+    entry.txt_converter()
+
+    #文本生成音乐
+    entry.txt2music()
+    entry.save_to_file(output_folder)
+
+    return (entry.txt, entry.converted_txt, entry.result_file_name)
     
 if __name__ == "__main__":
     image_recog = import_clip()
-    music_gen = import_music_generator(2)
+    music_gen = import_music_generator(1)
 
     output_folder = cwd / "outputs"
     img = Image.open(cwd / "static" / "test.jpg")

@@ -41,6 +41,19 @@ class ImageRecognization:
     def test_img2txt(self, image: Image) -> str:
         '''测试用函数，只会直接返回一种结果'''
         return "beautiful landscape of Africa, very satisfying, a lot of flowers and animals"
+    
+    def video2txt(self, video_path: str) -> str:
+        start_time = time.time()
+
+        # 图像预处理
+        image = image.convert('RGB')
+        
+        # 使用 Interrogator 对象进行图像识别
+        prompt_result = self.ci.interrogate_classic(image)
+
+        print(f"[TIME] taken for img2txt: {time.time() - start_time :.2f}s")
+        print("prompt result:"+prompt_result.encode('gbk', errors='replace').decode('gbk'))
+        return prompt_result
 
 if __name__=="__main__":
     # 打开测试图像文件

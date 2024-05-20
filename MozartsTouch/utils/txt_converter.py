@@ -29,7 +29,7 @@ class TxtConverter:
 
         return api_key
 
-    def txt_converter(self, content):
+    def txt_converter(self, content, addtxt):
         # Step 1. Filtered Prompt
         final_txt = ""
         result_list = content.split(", ")
@@ -42,7 +42,7 @@ class TxtConverter:
                 rel = rel.split(" by")[0]  
             final_txt += rel + ", "
         
-        content = final_txt[:-2]
+        content = final_txt[:-2] + addtxt#在这里加入附加文本然后一起丢进llm跑
         print("filtered_prompt result:"+content.encode('gbk', errors='replace').decode('gbk'))
 
         # Step 2. Converted Prompt
