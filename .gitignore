@@ -7,3 +7,4 @@ outputs
 model
 musicgen.wav
 api_key.ini
+videos/*

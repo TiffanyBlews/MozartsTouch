@@ -62,12 +62,12 @@ class PreProcessVideos:
 
     # Video dict for individual videos.
     # {base_config: data -> [{video_path, num_frames, data}]}
-    def build_video_config(self, video_path: str, num_frames: int):
-        return {
-            "video_path": video_path,
-            "num_frames": num_frames,
-            "data": []
-        }
+    # def build_video_config(self, video_path: str, num_frames: int):
+    #     return {
+    #         "video_path": video_path,
+    #         "num_frames": num_frames,
+    #         "data": []
+    #     }
 
     # Dict for video frames and prompts / captions.
     # Gets the frame index, then gets a caption for the that frame and stores it.
@@ -150,7 +150,7 @@ class PreProcessVideos:
     def process_video(self):
         self.load_blip()
         video_path = self.video_path
-        video_config = []
+        video_frame_list = []
 
         if not os.path.exists(video_path):
             raise ValueError(f"{video_path} does not exist.")
@@ -166,7 +166,7 @@ class PreProcessVideos:
 
         try:
             num_frames = int(len(video_reader))
-            video_config = self.build_video_config(video_path, num_frames)
+            # video_config = self.build_video_config(video_path, num_frames)
 
             for i in tqdm(
                     self.get_frame_range(derterministic_range), 
@@ -182,7 +182,7 @@ class PreProcessVideos:
 
                 prompt = self.process_blip(image)
                 video_data = self.build_video_data(frame_number, prompt)
-                video_config.append(video_data)
+                video_frame_list.append(video_data)
 
         except Exception as e:
             print(e)
@@ -190,7 +190,7 @@ class PreProcessVideos:
 
         # print(f"Done. Saving train config to {self.save_dir}.")
         # self.save_train_config(config)
-        return str(video_config)
+        return str(video_frame_list)
 
 
 if __name__ == "__main__":
