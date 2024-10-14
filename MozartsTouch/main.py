@@ -16,8 +16,9 @@ import time
 import argparse
 
 cwd = Path(__file__).resolve().parent 
+test_mode = False
 
-def import_clip(test_mode = False):
+def import_clip():
     '''导入图像识别模型'''
     start_time = time.time()
 
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     test_mode = args.test # True时关闭img2txt功能，节省运行资源，用于调试程序
     index = args.index
 
-    image_recog = import_clip(test_mode)
+    image_recog = import_clip()
     music_gen = import_music_generator(index)
 
     output_folder = cwd / "outputs"
