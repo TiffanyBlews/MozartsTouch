@@ -15,8 +15,8 @@ if not os.path.exists(model_path):
     model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-small")
 
 
-    model.save_pretrained("./app/model/musicgen_small_model")
-    processor.save_pretrained("./app/model/musicgen_small_processor")
+    model.save_pretrained("./model/musicgen_small_model")
+    processor.save_pretrained("./model/musicgen_small_processor")
 
     print("musicgen_small get daze\n")
 
@@ -25,8 +25,8 @@ if not os.path.exists(model_path):
     model = MusicgenForConditionalGeneration.from_pretrained("facebook/musicgen-medium")
 
 
-    model.save_pretrained("./app/model/musicgen_medium_model")
-    processor.save_pretrained("./app/model/musicgen_medium_processor")
+    model.save_pretrained("./model/musicgen_medium_model")
+    processor.save_pretrained("./model/musicgen_medium_processor")
 
     print("musicgen_medium get daze\n")
 

@@ -17,7 +17,7 @@ import argparse
 
 cwd = Path(__file__).resolve().parent 
 
-def import_clip():
+def import_clip(test_mode = False):
     '''导入图像识别模型'''
     start_time = time.time()
 
@@ -122,15 +122,14 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Mozart\'s Touch: Multi-modal Music Generation Framework')
 
-    parser.add_argument('-d', '--test', help='Test mode', action='store_true')
-    # parser.add_argument('-m', '--mode', type=int, default=1, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
+    parser.add_argument('-d', '--test', help='Test mode', default=False, action='store_true')
     parser.add_argument('-i', '--index', type=int, default=2, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
     
     args = parser.parse_args()
     test_mode = args.test # True时关闭img2txt功能，节省运行资源，用于调试程序
     index = args.index
 
-    image_recog = import_clip()
+    image_recog = import_clip(test_mode)
     music_gen = import_music_generator(index)
 
     output_folder = cwd / "outputs"
