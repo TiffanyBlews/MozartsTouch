@@ -53,13 +53,18 @@ python main.py --test_mode
 
 
 ## TO-DO List
-- 增加用户输入提示词功能
+- ~~增加用户输入提示词功能~~
 - ~~删除API中的mode~~
-- 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
-- 部署视频配乐的功能，尝试将 `Video-Llama` 或者 `Video-BLIP2` 整合到我们的项目中。
-- Use `argparse` to call model
+### 近期任务
+- 更新到最新的代码，将 `Video-BLIP2` 整合到我们的项目中。
+- 将评估代码整合进来
+- Use `argparse` to set and pass config
+- MusicGen部分重构策略模式
+- Use API instead of loading models manually
 - Add support for other models as an alternative e.g. LLaMa.
-
+### 远期任务
+- 尝试Florence-2等最新模型
+- 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
 
 
 

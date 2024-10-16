@@ -153,8 +153,7 @@ def video_to_music_generate(video_path: str, music_duration: int, music_gen: Mus
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Mozart\'s Touch: Multi-modal Music Generation Framework')
 
-    parser.add_argument('-d', '--test', help='Test mode', action='store_true')
-    # parser.add_argument('-m', '--mode', type=int, default=1, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
+    parser.add_argument('-d', '--test', help='Test mode', default=False, action='store_true')
     parser.add_argument('-i', '--index', type=int, default=2, help='Music Generation Model: 1 - Suno, 2 - MusicGenSmall, 3 - MusicGenMedium')
     
     args = parser.parse_args()
