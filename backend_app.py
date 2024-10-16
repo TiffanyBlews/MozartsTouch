@@ -52,7 +52,7 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
 #上传部分主体
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...), mode: int = Form(...)):
+async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...), mode: int = Form(...), instruction: str= Form(...)):
     '''
     上传图片以进行音乐生成
 
@@ -60,6 +60,7 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     - file: 图片文件，Content-Type: image/*
     - music_duration: 指定生成时间，请输入整数，以秒为单位
     - mode: 0为测试模式，1为Suno AI，2为MusicGen-Small，3为MusicGen-Medium
+    - instruction: 用户输入的限定文本
 
     Return: 
     - prompt: 图片转文本结果
@@ -88,6 +89,34 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
 
     return result_dict
 
+@app.post("/video")
+async def upload_file(file: UploadFile = File(...), instruction: str = File(...)):
+
+    print("Request Received Successfully, Processing...")
+    output_folder = app_path / "outputs"
+    video_path  = app_path / "videos" / file.filename
+
+    music_gen = mgs.get_music_gen(1)
+
+    # 将视频保存至本地，然后读取视频帧
+    contents = await file.read()
+    with open(video_path, "wb") as f: 
+        f.write(contents)
+
+    # 读取视频时长
+    vidcapture = cv.VideoCapture(str(video_path))
+    fps = vidcapture.get(cv.CAP_PROP_FPS)
+    totalNoFrames = vidcapture.get(cv.CAP_PROP_FRAME_COUNT)
+    music_duration = totalNoFrames // fps
+
+    result = MozartsTouch.video_to_music_generate(str(video_path), music_duration, music_gen, output_folder, instruction)
+
+    key_names = ("prompt", "converted_prompt", "result_file_name")
+    result_dict =  {key: value for key, value in zip(key_names, result)}
+    print(result_dict)
+
+    return result_dict
+
 
 @app.get("/music/{result_file_name}")
 async def get_music(result_file_name: str):
@@ -97,7 +126,7 @@ async def get_music(result_file_name: str):
     Return: 
     - 音频文件
     '''
-    file_full_path = app_path / "outputs"/ result_file_name
+    file_full_path = app_path / "outputs" / result_file_name
     return FileResponse(file_full_path)
 
 @app.get("/")

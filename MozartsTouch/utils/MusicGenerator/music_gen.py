@@ -24,7 +24,7 @@ class MusicGen:
             padding=True,
             return_tensors="pt",
         ).to(device)
-        audio_values = self.model.generate(**inputs, max_new_tokens=int(music_duration*256/5)) # music_duration为秒数，256token = 5s 
+        audio_values = self.model.generate(**inputs, max_new_tokens=int(256*music_duration//5)) # music_duration为秒数，256token = 5s 
 
         # 将生成的音乐数据转换为BytesIO并返回
         wav_file_data = BytesIO()

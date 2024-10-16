@@ -29,7 +29,31 @@ class TxtConverter:
 
         return api_key
 
-    def txt_converter(self, content):
+    def process_video_description(self, json_string):
+        client = OpenAI(
+            base_url="https://api.xty.app/v1", 
+            api_key=self.api_key,
+            http_client=httpx.Client(
+                base_url="https://api.xty.app/v1",
+                follow_redirects=True,
+            ),
+        )
+
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are about to process a sequence of captions, each corresponding to a distinct frame sampled from a video. Your task is to convert these captions into a cohesive, well-structured paragraph. \
+                                            This paragraph should describe the video in a fluid, engaging manner and follows these guidelines: avoiding semantic repetition to the greatest extent, and giving a description in less than 200 characters."},
+                {"role": "user", "content": json_string}
+            ]
+        )
+        result = completion.choices[0].message.content
+        print(result)
+        #print("result: " + result.encode('gbk', errors='replace').decode('gbk'))
+
+        return result # 返回生成结果
+
+    def txt_converter(self, content, addtxt):
         # Step 1. Filtered Prompt
         final_txt = ""
         result_list = content.split(", ")
@@ -43,6 +67,8 @@ class TxtConverter:
             final_txt += rel + ", "
         
         content = final_txt[:-2]
+        if addtxt != None:
+            content = content + addtxt #在这里加入附加文本然后一起丢进llm跑
         print("filtered_prompt result:"+content.encode('gbk', errors='replace').decode('gbk'))
 
         # Step 2. Converted Prompt
@@ -62,6 +88,37 @@ class TxtConverter:
                 {"role": "assistant", "content": "A grand orchestral arrangement with thunderous percussion, epic brass fanfares, and soaring strings, creating a cinematic atmosphere fit for a heroic battle."},
                 {"role": "user", "content": "a group of people sitting on a beach next to a body of water, tourist destination, hawaii"},
                 {"role": "assistant", "content": "Pop dance track with catchy melodies, tropical percussion, and upbeat rhythms, perfect for the beach."},
+                {"role": "user", "content": content}
+            ]
+        )
+        converted_result = completion.choices[0].message.content
+        print("converted result: " + converted_result.encode('gbk', errors='replace').decode('gbk'))
+        return converted_result
+    
+    def video_txt_converter(self, content, addtxt):
+        
+        client = OpenAI(
+            base_url="https://oneapi.xty.app/v1",
+            api_key=self.api_key,
+            http_client=httpx.Client(
+                base_url="https://oneapi.xty.app/v1",
+                follow_redirects=True,
+            ),
+        )
+
+        if addtxt != None:
+            content = content + addtxt #在这里加入附加文本然后一起丢进llm跑
+            
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages = [
+                {"role": "system", "content": "Convert in less than 200 characters this video caption to a very concise musical description with musical terms, so that it can be used as a prompt to generate music through AI model, stricly in English. \
+                                               You need to speculate the mood of the given video caption and add it to the music description. \
+                                               You also need to specify a music genre in the description such as pop, hip hop, funk, electronic, jazz, rock, metal, soul, R&B etc."},
+                {"role": "user", "content": "Two men playing cellos in a room with a piano and a grand glass window backdrop."},
+                {"role": "assistant", "content": "Classical chamber music piece featuring cello duet, intricate piano accompaniment, emotive melodies set in an elegant setting, showcasing intricate melodies and emotional depth, the rich harmonies blend seamlessly in an elegant and refined setting, creating a symphonic masterpiece."},
+                {"role": "user", "content": "A man with guitar in hand, captivates a large audience on stage at a concert. The crowd watches in awe as the performer delivers a stellar musical performance."},
+                {"role": "assistant", "content": "Rock concert with dynamic guitar riffs, precise drumming, and powerful vocals, creating a captivating and electrifying atmosphere, uniting the audience in excitement and musical euphoria."},
                 {"role": "user", "content": content}
             ]
         )

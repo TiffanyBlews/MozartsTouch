@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from typing import Tuple
+from typing import Union
 
 from .MusicGenerator.music_gen import MusicGen
 from .MusicGenerator.suno_ai import Suno
@@ -40,7 +40,7 @@ class MusicGenerator(metaclass=AbstractSingletonMeta):
         pass
     
     @abstractmethod
-    def generate(self, text: str, music_duration: int) ->(io.BytesIO | Tuple):
+    def generate(self, text: str, music_duration: int) -> Union[io.BytesIO, str]:
         """
         根据传入文本和音乐时长生成音乐
 
@@ -95,7 +95,18 @@ class MusicGenMediumGenerator(MusicGenerator):
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
         return self.model.generate(text, music_duration)
 
+class MusicGenLargeGenerator(MusicGenerator):
+    def __init__(self) -> None:
+        self.model = MusicGen("musicgen_large")
+        self._model_name = "musicgen_large"
+    
+    @property
+    def model_name(self):
+        return self._model_name
 
+    def generate(self, text: str, music_duration: int) -> io.BytesIO:
+        return self.model.generate(text, music_duration)
+    
 class SunoGenerator(MusicGenerator):
     def __init__(self) -> None:
         self._model_name = "Suno"
@@ -105,7 +116,7 @@ class SunoGenerator(MusicGenerator):
     def model_name(self):
         return self._model_name
     
-    def generate(self, text: str, music_duration: int) -> Tuple:
+    def generate(self, text: str, *_) -> str:
         return Suno.generate(text)
 
 
@@ -117,6 +128,7 @@ class MusicGeneratorFactory:
         "test": TestGenerator,
         "musicgen_small": MusicGenSmallGenerator,
         "musicgen_medium": MusicGenMediumGenerator,
+        "musicgen-large": MusicGenLargeGenerator,
         "suno": SunoGenerator,
     }
 
