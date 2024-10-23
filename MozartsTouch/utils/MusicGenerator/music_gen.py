@@ -4,11 +4,15 @@ from transformers import AutoProcessor, MusicgenForConditionalGeneration
 import scipy
 import torch
 from io import BytesIO
+
+from MozartsTouch.utils.MusicGenerator.MusicGeneratorType import MusicGenerator
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 module_path = Path(__file__).resolve().parent.parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
-class MusicGen:
+class MusicGen(MusicGenerator):
     def __init__(self, model_name = "musicgen_small") -> None:
+        self.model_name = model_name
         self.processor = AutoProcessor.from_pretrained(module_path / "model" / (model_name+"_processor"))
         self.model = MusicgenForConditionalGeneration.from_pretrained(module_path / "model" / (model_name+"_model")).to(device)
         self.sampling_rate = self.model.config.audio_encoder.sampling_rate

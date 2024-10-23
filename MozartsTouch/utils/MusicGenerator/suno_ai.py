@@ -1,6 +1,9 @@
 import time
 import requests
 from io import BytesIO
+
+from MozartsTouch.utils.MusicGenerator.MusicGeneratorType import MusicGenerator
+
 base_url = 'https://suno-api-psi-one.vercel.app/'
 
 
@@ -32,7 +35,9 @@ def get_quota_information():
     response = requests.get(url)
     return response.json()
 
-class Suno:
+class Suno(MusicGenerator):
+    model_name = "suno"
+    
     @classmethod
     def generate(self, text: str):
         data = generate_audio_by_prompt({

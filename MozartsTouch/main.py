@@ -1,16 +1,19 @@
 from pathlib import Path
-from .utils.image_processing import ImageRecognization
-from .utils.music_generation import MusicGenerator,  MusicGeneratorFactory
-from .utils.txt_converter import TxtConverter
-from .utils.preprocess_single import PreProcessVideos
+
+# from .utils.image_processing import ImageRecognization
+# from .utils.music_generation import MusicGenerator,  MusicGeneratorFactory
+# from .utils.txt_converter import TxtConverter
+# from .utils.preprocess_single import PreProcessVideos
 
 '''
 Because of Python's feature of chain importing (https://stackoverflow.com/questions/5226893/understanding-a-chain-of-imports-in-python)
 you need to use these lines below instead of those above to be able to run the test code after `if __name__=="__main__"`
 '''
-# from utils.image_processing import ImageRecognization
-# from utils.music_generation import MusicGenerator,  MusicGeneratorFactory
-# from utils.txt_converter import TxtConverter
+from MozartsTouch.utils.MusicGenerator.suno_ai import Suno
+from MozartsTouch.utils.MusicGenerator.music_gen import MusicGen
+from utils.image_processing import ImageRecognization
+from utils.music_generation import music_gen_generate,  suno_ai_generate
+from utils.txt_converter import TxtConverter
 import datetime
 from PIL import Image
 import time
@@ -31,20 +34,23 @@ def import_clip():
 
 def import_music_generator(mode: int):
     '''导入音乐生成模型'''
-    models = {
+    models_dict = {
         0: "test",
         1: "suno", # SunoGenerator,
         2: "musicgen_small", # MusicGenSmallGenerator,
         3: "musicgen_medium", # MusicGenMediumGenerator,
-        4: "musicgen-large", # MusicGenLargeGenerator
+        4: "musicgen_large", # MusicGenLargeGenerator
     }
 
     start_time = time.time()
     if test_mode:
-        mg = MusicGeneratorFactory.create_music_generator("test")
+        mode = 0
+    
+    if mode == 1:
+        mg = Suno
     else:
-        mg = MusicGeneratorFactory.create_music_generator(models[mode])
-    print(f"[TIME] taken to load Music Generation module {models[mode]}: {time.time() - start_time :.2f}s")
+        mg = MusicGen(models_dict[mode])
+    print(f"[TIME] taken to load Music Generation module {models_dict[mode]}: {time.time() - start_time :.2f}s")
     return mg
 
 
@@ -55,8 +61,8 @@ class Entry:
         self.img=img
         self.txt = None
         self.txt_con = TxtConverter()
-        self.converted_txt = None
         self.addtxt = addtxt # 追加文本输入
+        self.converted_txt = None
         self.image_recog = image_recog # 使用传入的图像识别模型对象
         self.music_gen = music_gen  # 使用传入的音乐生成对象
         self.music_duration = music_duration
@@ -84,9 +90,9 @@ class Entry:
     def txt2music(self):
         '''根据文本进行音乐生成，获取生成的音乐的BytesIO或URL'''
         if self.music_gen.model_name.startswith("Suno"):
-            self.result_urls = self.music_gen.generate(self.converted_txt, self.music_duration)
+            self.result_urls = suno_ai_generate(self)
         else:
-            self.music_bytes_io = self.music_gen.generate(self.converted_txt, self.music_duration)
+            self.music_bytes_io = music_gen_generate(self)
 
     def save_to_file(self, output_folder:Path):
         '''将音乐保存到`/outputs`中，文件名为用户上传时间的时间戳'''
@@ -102,11 +108,15 @@ class Entry:
 
         return self.result_file_name
     
+def music_gen_generate(entry: Entry):
+    return entry.music_gen.generate(entry.converted_txt, entry.music_duration)
+
+def suno_ai_generate(entry: Entry):
+    return entry.music_gen.generate(entry.converted_txt)
+
 def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRecognization, music_gen: MusicGenerator, output_folder=Path("./outputs"), addtxt: str=None):
     '''模型核心过程'''
-    # 根据输入mode信息获得对应的音乐生成模型类的实例
-    # mg = mgs[mode]
-
+    
     # 根据用户输入创建一个类，并传入图像识别和音乐生成模型的实例
     entry = Entry(img, image_recog, music_gen, music_duration, addtxt)
 
