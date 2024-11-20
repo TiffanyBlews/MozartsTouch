@@ -1,4 +1,6 @@
 import os
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 from transformers import AutoProcessor, MusicgenForConditionalGeneration
 
 #设定文件路径
