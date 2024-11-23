@@ -16,8 +16,8 @@ from PIL import Image
 import time
 import argparse
 
-cwd = Path(__file__).resolve().parent 
-test_mode = True
+module_path = Path(__file__).resolve().parent 
+test_mode = False
 def import_clip():
     '''导入图像识别模型'''
     start_time = time.time()
@@ -163,8 +163,8 @@ if __name__ == "__main__":
     image_recog = import_clip()
     music_gen = import_music_generator(index)
 
-    output_folder = cwd / "outputs"
-    img = Image.open(cwd / "static" / "test.jpg")
+    output_folder = module_path / "outputs"
+    img = Image.open(module_path / "static" / "test.jpg")
     music_duration =10
     addtxt = None
 
