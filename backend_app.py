@@ -15,6 +15,7 @@ from PIL import Image
 from pathlib import Path
 app_path = Path(__file__).parent# app_path为项目根目录（`/`）
 import MozartsTouch
+import cv2 as cv
 
 class MusicGenerators: 
     '''惰性加载，需要用到哪个MusicGenerator再导入，同时记录下来，防止多次导入同一个模型'''
@@ -96,7 +97,7 @@ async def upload_file(file: UploadFile = File(...), instruction: str = File(...)
     output_folder = app_path / "outputs"
     video_path  = app_path / "videos" / file.filename
 
-    music_gen = mgs.get_music_gen(1)
+    music_gen = mgs.get_music_gen(3)
 
     # 将视频保存至本地，然后读取视频帧
     contents = await file.read()

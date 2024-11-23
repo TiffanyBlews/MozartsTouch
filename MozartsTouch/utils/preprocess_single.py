@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 import decord
 
-from einops import rearrange
+# from einops import rearrange
 from torchvision import transforms
 from tqdm import tqdm
 from PIL import Image
