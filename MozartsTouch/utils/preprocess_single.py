@@ -14,6 +14,7 @@ from tqdm import tqdm
 from PIL import Image
 from decord import VideoReader, cpu
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from loguru import logger
 
 module_path = Path(__file__).resolve().parent.parent  # module_path为模块根目录（`/MozartsTouch`）
 
@@ -83,7 +84,7 @@ class PreProcessVideos:
 
     # Load BLIP for processing
     def load_blip(self, model_name = "blip-image-captioning-base"):
-        print("Loading BLIP...")
+        logger.info(f"Loading BLIP model {model_name}")
 
         processor = BlipProcessor.from_pretrained(module_path / "model" / f"{model_name}_processor")
         model = BlipForConditionalGeneration.from_pretrained(
@@ -106,9 +107,9 @@ class PreProcessVideos:
         frame_number = (
             random.randrange(0, int(num_frames)) if random_start_frame else frame_num
             )
-        # print("getting frame: ", frame_number)
+        # logger.info("getting frame: ", frame_number)
         frame = video_reader[frame_number].permute(2,0,1)
-        # print("getting image...")
+        # logger.info("getting image...")
         image = transforms.ToPILImage()(frame).convert("RGB")
         return frame_number, image
 
@@ -164,7 +165,7 @@ class PreProcessVideos:
             frame_step = abs(video_len // self.prompt_amount)
             derterministic_range = range(1, abs(video_len - 1), frame_step) if frame_step else range(video_len)
         except:
-            print(f"Error loading {video_path}. Video may be unsupported or corrupt.")
+            logger.error(f"Error loading {video_path}. Video may be unsupported or corrupt.")
             return
 
         try:
@@ -188,10 +189,10 @@ class PreProcessVideos:
                 video_frame_list.append(video_data)
 
         except Exception as e:
-            print(e)
+            logger.error(e)
             return
 
-        # print(f"Done. Saving train config to {self.save_dir}.")
+        # logger.info(f"Done. Saving train config to {self.save_dir}.")
         # self.save_train_config(config)
         return str(video_frame_list)
 

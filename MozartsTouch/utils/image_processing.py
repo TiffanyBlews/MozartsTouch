@@ -4,9 +4,13 @@ import torch.cuda
 from pathlib import Path
 import time
 
+import yaml
+from loguru import logger
+
 module_path = Path(__file__).resolve().parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
 class ImageRecognization:
+    # TODO: 去掉clip_interrogator
     def __init__(self) -> None:
         '''初始化图像识别配置'''
         ci_config = Config()
@@ -34,8 +38,8 @@ class ImageRecognization:
         # 使用 Interrogator 对象进行图像识别
         prompt_result = self.ci.interrogate_classic(image)
 
-        print(f"[TIME] taken for img2txt: {time.time() - start_time :.2f}s")
-        print("prompt result:"+prompt_result.encode('gbk', errors='replace').decode('gbk'))
+        logger.info(f"[TIME] taken for img2txt: {time.time() - start_time :.2f}s")
+        logger.info("prompt result:"+prompt_result.encode('gbk', errors='replace').decode('gbk'))
         return prompt_result
 
     def test_img2txt(self, image: Image) -> str:

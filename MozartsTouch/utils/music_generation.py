@@ -1,16 +1,14 @@
 import io
 from pathlib import Path
 from typing import Union
+from loguru import logger
 
-from .MusicGenerator.music_gen import MusicGen
-from .MusicGenerator.suno_ai import Suno
-
-'''
-Because of Python's feature of chain importing (https://stackoverflow.com/questions/5226893/understanding-a-chain-of-imports-in-python)
-you need to use these lines below instead of those above to be able to run the test code after `if __name__=="__main__"`
-'''
-# from MusicGenerator.music_gen import MusicGen
-# from MusicGenerator.suno_ai import Suno
+if __name__=="__main__":
+    from MusicGenerator.music_gen import MusicGen
+    from MusicGenerator.suno_ai import Suno
+else:
+    from .MusicGenerator.music_gen import MusicGen
+    from .MusicGenerator.suno_ai import Suno
 
 
 module_path = Path(__file__).resolve().parent.parent # module_path为模块根目录（`/MozartsTouch`）
@@ -64,8 +62,8 @@ class TestGenerator(MusicGenerator):
         return self._model_name
 
     def generate(self, text: str, music_duration: int) -> io.BytesIO:
-        '''测试用，只会返回固定的*BONK*声音文件'''
-        print("音乐生成提示词：" + text.encode('gbk', errors='replace').decode('gbk'))
+        '''Only return dummy audio *BONK*.mp3'''
+        logger.info("Music Generation Prompt:" + text.encode('gbk', errors='replace').decode('gbk'))
         test_path = module_path/"static"/"BONK.mp3"
         test_mp3 = open(test_path,"rb").read()
         return io.BytesIO(test_mp3)
@@ -136,17 +134,18 @@ class MusicGeneratorFactory:
     def create_music_generator(cls, music_gen_model_name: str) -> MusicGenerator:
         generator_class = cls.generator_classes.get(music_gen_model_name)
         if generator_class:
+            logger.info(f'Get a music generator {generator_class}')
             return generator_class()
         else:
             raise ValueError("Unsupported music_gen_model_name")
 
-music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-small")
+# music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-small")
 # music_gen_medium = MusicGeneratorFactory.create_music_generator("musicgen-medium")
 # suno_ai = MusicGeneratorFactory.create_music_generator("suno")
 
 if __name__=="__main__":    
-
+    music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-small")
     output = music_gen_small.generate("cyberpunk electronic dancing music",1)
-    print(music_gen_small.model_name)
+    logger.info(music_gen_small.model_name)
     with open(module_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

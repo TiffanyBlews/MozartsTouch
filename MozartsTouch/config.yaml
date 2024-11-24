@@ -1,0 +1,32 @@
+# When in TEST_MODE, no models will be loaded and only dummy data will be returned
+TEST_MODE: False
+
+
+DEFAULT_CAPTION_MODEL: blip-image-captioning-base
+
+DEFAULT_LLM_MODEL: qwen2.5-instruct-32b-int4
+
+# Options：['test', 'musicgen-small', 'musicgen-medium', 'musicgen-large', 'suno']
+DEFAULT_MUSIC_MODEL: musicgen-small
+
+
+CAPTION_MODEL_CONFIG:
+
+LLM_MODEL_CONFIG:
+  # Platform type
+  # Options：['xinference', 'ollama', 'oneapi', 'fastchat', 'openai', 'custom openai']
+  # This option is not implemented yet ¯\_(シ)_/¯
+  PLATFORM_TYPE: openai
+
+  # OpenAI API URL
+  API_BASE_URL: http://114.514.810.893/v1
+
+  # api key if available
+  API_KEY: EMPTY
+
+  API_PROXY: ''
+
+  API_CONCURRENCIES: 1
+
+MUSIC_MODEL_CONFIG:
+  API_BASE_URL: https://suno-api-psi-one.vercel.app/

@@ -4,6 +4,8 @@ from transformers import AutoProcessor, MusicgenForConditionalGeneration
 import scipy
 import torch
 from io import BytesIO
+from loguru import logger
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 module_path = Path(__file__).resolve().parent.parent.parent # module_path为模块根目录（`/MozartsTouch`）
 
@@ -29,7 +31,7 @@ class MusicGen:
         # 将生成的音乐数据转换为BytesIO并返回
         wav_file_data = BytesIO()
         scipy.io.wavfile.write(wav_file_data, rate=self.sampling_rate, data=audio_values[0, 0].cpu().numpy())
-        print(f"[TIME] taken for txt2music: {time.time() - start_time :.2f}s")
+        logger.info(f"[TIME] taken for txt2music: {time.time() - start_time :.2f}s")
         return wav_file_data
 
 if __name__=="__main__":    

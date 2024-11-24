@@ -1,23 +1,34 @@
 from pathlib import Path
-from .utils.image_processing import ImageRecognization
-from .utils.music_generation import MusicGenerator,  MusicGeneratorFactory
-from .utils.txt_converter import TxtConverter
-from .utils.preprocess_single import PreProcessVideos
+import datetime
+from PIL import Image
+import time
+import argparse
+import yaml
+from loguru import logger
+
 
 '''
 Because of Python's feature of chain importing (https://stackoverflow.com/questions/5226893/understanding-a-chain-of-imports-in-python)
 you need to use these lines below instead of those above to be able to run the test code after `if __name__=="__main__"`
 '''
-# from utils.image_processing import ImageRecognization
-# from utils.music_generation import MusicGenerator,  MusicGeneratorFactory
-# from utils.txt_converter import TxtConverter
-import datetime
-from PIL import Image
-import time
-import argparse
+if __name__=="__main__":
+    from utils.image_processing import ImageRecognization
+    from utils.music_generation import MusicGenerator,  MusicGeneratorFactory
+    from utils.txt_converter import TxtConverter
+    from utils.preprocess_single import PreProcessVideos
+else: 
+    from .utils.image_processing import ImageRecognization
+    from .utils.music_generation import MusicGenerator,  MusicGeneratorFactory
+    from .utils.txt_converter import TxtConverter
+    from .utils.preprocess_single import PreProcessVideos
+
 
 module_path = Path(__file__).resolve().parent 
-test_mode = False
+with open(module_path / 'config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+
+test_mode = config['TEST_MODE']
+
 def import_clip():
     '''导入图像识别模型'''
     start_time = time.time()
@@ -25,26 +36,18 @@ def import_clip():
     ir = ImageRecognization()
     if not test_mode:
         ir.instantiate_ci()
-    print(f"[TIME] taken to load Image Recognition module: {time.time() - start_time :.2f}s")
+    logger.info(f"[TIME] taken to load Image Recognition module: {time.time() - start_time :.2f}s")
 
     return ir
 
-def import_music_generator(mode: int):
-    '''导入音乐生成模型'''
-    models = {
-        0: "test",
-        1: "suno", # SunoGenerator,
-        2: "musicgen-small", # MusicGenSmallGenerator,
-        3: "musicgen-medium", # MusicGenMediumGenerator,
-        4: "musicgen-large", # MusicGenLargeGenerator
-    }
-
+def import_music_generator():
     start_time = time.time()
+    music_model = config['DEFAULT_MUSIC_MODEL']
     if test_mode:
         mg = MusicGeneratorFactory.create_music_generator("test")
     else:
-        mg = MusicGeneratorFactory.create_music_generator(models[mode])
-    print(f"[TIME] taken to load Music Generation module {models[mode]}: {time.time() - start_time :.2f}s")
+        mg = MusicGeneratorFactory.create_music_generator(music_model)
+    logger.info(f"[TIME] taken to load Music Generation module {music_model}: {time.time() - start_time :.2f}s")
     return mg
 
 
@@ -98,7 +101,7 @@ class Entry:
         with open(file_path, "wb") as music_file:
             music_file.write(self.music_bytes_io.getvalue())
 
-        print(f"音乐已保存至 {file_path}")
+        logger.info(f"音乐已保存至 {file_path}")
 
         return self.result_file_name
     
@@ -124,7 +127,7 @@ def img_to_music_generate(img: Image, music_duration: int, image_recog: ImageRec
     entry.txt2music()
 
     if not music_gen.model_name.startswith("Suno"):
-        print("Here.")
+        # print("Here.")
         entry.save_to_file(output_folder)
 
     return (entry.txt, entry.converted_txt, entry.result_file_name, music_gen.model_name)
@@ -173,4 +176,4 @@ if __name__ == "__main__":
 
     result_dict =  {key: value for key, value in zip(key_names, result)}
 
-    print(result_dict)
+    logger.info(result_dict)

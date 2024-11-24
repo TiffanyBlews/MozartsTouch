@@ -1,8 +1,10 @@
 import os
+
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 
 from pathlib import Path
 from transformers import AutoProcessor, MusicgenForConditionalGeneration, BlipForConditionalGeneration
+from loguru import logger
 
 # 设置环境变量和路径
 cwd = Path(__file__).resolve().parent
@@ -23,13 +25,13 @@ def download_and_save_model(model_class, processor_class, model_name, save_dir):
     processor_save_path =  save_dir / f"{model_name.split('/')[-1]}_processor"
 
     try:
-        print(f"正在尝试加载模型和处理器: {model_name}...")
+        logger.info(f"正在尝试加载模型和处理器: {model_name}...")
         model = model_class.from_pretrained(model_save_path)
         processor = processor_class.from_pretrained(processor_save_path)
 
-        print(f"{model_name} 加载成功！")
+        logger.info(f"{model_name} 加载成功！")
     except Exception as e:
-        print(f"加载 {model_name} 时出错: {e}")
+        logger.info(f"加载 {model_name} 时出错: {e}")
         model = model_class.from_pretrained(model_name)
         processor = processor_class.from_pretrained(model_name)
 

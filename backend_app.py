@@ -16,19 +16,11 @@ from pathlib import Path
 app_path = Path(__file__).parent# app_path为项目根目录（`/`）
 import MozartsTouch
 import cv2 as cv
+from loguru import logger
 
-class MusicGenerators: 
-    '''惰性加载，需要用到哪个MusicGenerator再导入，同时记录下来，防止多次导入同一个模型'''
-    music_gens = {}
-    def get_music_gen(self, mode):
-        if self.music_gens.keys().__contains__(mode):
-            music_gen = self.music_gens[mode]
-        else:
-            music_gen = MozartsTouch.import_music_generator(mode)
-            self.music_gens[mode] = music_gen
-        return music_gen
+
         
-mgs = MusicGenerators()
+music_gen = MozartsTouch.import_music_generator()
 image_recog = MozartsTouch.import_clip()
 
 
@@ -69,10 +61,9 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     - result_file_url: 生成的音频URL，使用GET方法访问"result_file_url"获取音频文件。
         如果使用Suno AI会一次生成两个音频，此时该值为字符串列表
     '''
-    print("Request Received Successfully, Processing...")
+    logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
 
-    music_gen = mgs.get_music_gen(mode)
 
     img = read_image_from_binary(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
@@ -86,18 +77,17 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     key_names = ("prompt", "converted_prompt", "result_file_url")
     
     result_dict =  {key: value for key, value in zip(key_names, result)}
-    print(result_dict)
+    logger.info('**********FINAL RESULT**********')
+    logger.info(result_dict)
 
     return result_dict
 
 @app.post("/video")
 async def upload_file(file: UploadFile = File(...), instruction: str = File(...)):
 
-    print("Request Received Successfully, Processing...")
+    logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
     video_path  = app_path / "videos" / file.filename
-
-    music_gen = mgs.get_music_gen(3)
 
     # 将视频保存至本地，然后读取视频帧
     contents = await file.read()
@@ -114,7 +104,9 @@ async def upload_file(file: UploadFile = File(...), instruction: str = File(...)
 
     key_names = ("prompt", "converted_prompt", "result_file_name")
     result_dict =  {key: value for key, value in zip(key_names, result)}
-    print(result_dict)
+
+    logger.info('**********FINAL RESULT**********')
+    logger.info(result_dict)
 
     return result_dict
 
@@ -128,6 +120,7 @@ async def get_music(result_file_name: str):
     - 音频文件
     '''
     file_full_path = app_path / "outputs" / result_file_name
+    logger.info(f'Return file {file_full_path}')
     return FileResponse(file_full_path)
 
 @app.get("/")
