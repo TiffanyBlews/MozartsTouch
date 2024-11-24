@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 import torchvision
 import json
@@ -13,6 +14,8 @@ from tqdm import tqdm
 from PIL import Image
 from decord import VideoReader, cpu
 from transformers import BlipProcessor, BlipForConditionalGeneration
+
+module_path = Path(__file__).resolve().parent.parent  # module_path为模块根目录（`/MozartsTouch`）
 
 decord.bridge.set_bridge('torch')
 
@@ -78,13 +81,13 @@ class PreProcessVideos:
             "prompt": prompt
         }
 
-    # Load BLIP-large for processing
-    def load_blip(self):
+    # Load BLIP for processing
+    def load_blip(self, model_name = "blip-image-captioning-base"):
         print("Loading BLIP...")
 
-        processor = BlipProcessor.from_pretrained("/root/autodl-tmp/blip-large")
+        processor = BlipProcessor.from_pretrained(module_path / "model" / f"{model_name}_processor")
         model = BlipForConditionalGeneration.from_pretrained(
-            "/root/autodl-tmp/blip-large", torch_dtype=torch.float16
+            module_path / "model" / f"{model_name}_model", torch_dtype=torch.float16
         ).to(self.device)
 
         self.processor = processor

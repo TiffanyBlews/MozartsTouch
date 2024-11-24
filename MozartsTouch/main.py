@@ -34,8 +34,8 @@ def import_music_generator(mode: int):
     models = {
         0: "test",
         1: "suno", # SunoGenerator,
-        2: "musicgen_small", # MusicGenSmallGenerator,
-        3: "musicgen_medium", # MusicGenMediumGenerator,
+        2: "musicgen-small", # MusicGenSmallGenerator,
+        3: "musicgen-medium", # MusicGenMediumGenerator,
         4: "musicgen-large", # MusicGenLargeGenerator
     }
 

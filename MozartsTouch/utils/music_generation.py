@@ -73,8 +73,8 @@ class TestGenerator(MusicGenerator):
 
 class MusicGenSmallGenerator(MusicGenerator):
     def __init__(self) -> None:
-        self.model = MusicGen("musicgen_small")
-        self._model_name = "musicgen_small"
+        self.model = MusicGen("musicgen-small")
+        self._model_name = "musicgen-small"
     
     @property
     def model_name(self):
@@ -85,8 +85,8 @@ class MusicGenSmallGenerator(MusicGenerator):
     
 class MusicGenMediumGenerator(MusicGenerator):
     def __init__(self) -> None:
-        self.model = MusicGen("musicgen_medium")
-        self._model_name = "musicgen_medium"
+        self.model = MusicGen("musicgen-medium")
+        self._model_name = "musicgen-medium"
 
     @property
     def model_name(self):
@@ -97,8 +97,8 @@ class MusicGenMediumGenerator(MusicGenerator):
 
 class MusicGenLargeGenerator(MusicGenerator):
     def __init__(self) -> None:
-        self.model = MusicGen("musicgen_large")
-        self._model_name = "musicgen_large"
+        self.model = MusicGen("musicgen-large")
+        self._model_name = "musicgen-large"
     
     @property
     def model_name(self):
@@ -126,8 +126,8 @@ class MusicGeneratorFactory:
     '''
     generator_classes = {
         "test": TestGenerator,
-        "musicgen_small": MusicGenSmallGenerator,
-        "musicgen_medium": MusicGenMediumGenerator,
+        "musicgen-small": MusicGenSmallGenerator,
+        "musicgen-medium": MusicGenMediumGenerator,
         "musicgen-large": MusicGenLargeGenerator,
         "suno": SunoGenerator,
     }
@@ -140,8 +140,8 @@ class MusicGeneratorFactory:
         else:
             raise ValueError("Unsupported music_gen_model_name")
 
-music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen_small")
-# music_gen_medium = MusicGeneratorFactory.create_music_generator("musicgen_medium")
+music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-small")
+# music_gen_medium = MusicGeneratorFactory.create_music_generator("musicgen-medium")
 # suno_ai = MusicGeneratorFactory.create_music_generator("suno")
 
 if __name__=="__main__":    
