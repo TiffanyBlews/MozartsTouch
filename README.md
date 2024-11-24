@@ -2,7 +2,7 @@
 This is the official implementation of [Mozart's Touch: A Lightweight Multi-modal Music Generation Framework Based on Pre-Trained Large Models](https://arxiv.org/abs/2405.02801)
 
 ![](logo.png)
-
+[Demostration Page](https://tiffanyblews.github.io/MozartsTouch-demo/)
 ![](architecture.png)
 
 ## Package Description
