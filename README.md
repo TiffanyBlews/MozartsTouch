@@ -1,8 +1,10 @@
-# Mozart's Touch
+# Mozart's Touch: Multi-Modal Music Generation with Pre-Trained Models
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2405.02801) [![GitHub Stars](https://img.shields.io/github/stars/TiffanyBlews/MozartsTouch?style=social)](https://github.com/TiffanyBlews/MozartsTouch) [![githubio](https://img.shields.io/badge/GitHub.io-Demo_Page-blue?logo=Github&style=flat-square)](https://tiffanyblews.github.io/MozartsTouch-demo/)
+
 This is the official implementation of [Mozart's Touch: A Lightweight Multi-modal Music Generation Framework Based on Pre-Trained Large Models](https://arxiv.org/abs/2405.02801)
 
 ![](logo.png)
-[Demostration Page](https://tiffanyblews.github.io/MozartsTouch-demo/)
+
 ![](architecture.png)
 
 ## Package Description
@@ -10,14 +12,14 @@ This repository is structured as follows:
 ```
 Diancai-Backend
 ├─MozartsTouch/: source code for the implementation of Mozart's Touch
-│  ├─model/: pre-trained MusicGen model
+│  ├─model/: pre-trained models
 │  ├─static/: static source for test purpose
 │  ├─utils/: source code for the modules
-│  ├─download_model.py: download pre-trained MusicGen model to model/
+│  ├─download_model.py: download pre-trained model to ./model/
 │  ├─config.yaml: configurations such as LLM model URLs, API keys
 │  └─main.py: Main program of Mozart's Touch
 │ outputs/: directory to store generation result music
-│ backend_app.py: program for backend web application of Mozart's Touch
+├─backend_app.py: program for backend web application of Mozart's Touch
 └─start_server.py: start the backend server of Mozart's Touch
 ```
 ## Setup
@@ -52,8 +54,7 @@ python main.py --test_mode
 
 ## TO-DO List
 - ~~增加用户输入提示词功能~~
-- ~~删除API中的mode~~
-### 近期任务
+- 删除API中的mode
 - ~~更新到最新的代码，将 `Video-BLIP2` 整合到我们的项目中。~~
 - 将评估代码整合进来
 - ~~Use `argparse` to set and pass config~~
