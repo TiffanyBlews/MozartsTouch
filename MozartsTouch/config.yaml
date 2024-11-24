@@ -1,6 +1,8 @@
 # When in TEST_MODE, no models will be loaded and only dummy data will be returned
 TEST_MODE: False
 
+# Change this to disable LLM for ablation study purpose
+USE_LLM: True
 
 DEFAULT_CAPTION_MODEL: blip-image-captioning-base
 

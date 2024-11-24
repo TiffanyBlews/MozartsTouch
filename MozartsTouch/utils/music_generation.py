@@ -145,7 +145,7 @@ class MusicGeneratorFactory:
 
 if __name__=="__main__":    
     music_gen_small = MusicGeneratorFactory.create_music_generator("musicgen-small")
-    output = music_gen_small.generate("cyberpunk electronic dancing music",1)
+    output = music_gen_small.generate("a daft punky thrash music",1)
     logger.info(music_gen_small.model_name)
     with open(module_path / 'musicgen.wav', 'wb') as f:
         f.write(output.getvalue())

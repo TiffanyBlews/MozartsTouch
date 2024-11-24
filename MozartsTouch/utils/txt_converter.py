@@ -12,30 +12,36 @@ with open(module_path / 'config.yaml', 'r') as file:
 class TxtConverter:
     def __init__(self):
         # assert config['LLM_MODEL_CONFIG']['PLATFORM_TYPE']
-        self.model = config['DEFAULT_LLM_MODEL']
-        self.api_url = config['LLM_MODEL_CONFIG']['API_BASE_URL']
-        self.api_key = config['LLM_MODEL_CONFIG']['API_KEY']
+        if config['USE_LLM']:
+            self.use_llm = True
+            self.model = config['DEFAULT_LLM_MODEL']
+            self.api_url = config['LLM_MODEL_CONFIG']['API_BASE_URL']
+            self.api_key = config['LLM_MODEL_CONFIG']['API_KEY']
+            
+            if not self.api_key:
+                # 如果没有找到API密钥，可以要求用户手动输入或引发异常
+                api_key = input("Enter your OpenAI API key: ")
 
-        if not self.api_key:
-            # 如果没有找到API密钥，可以要求用户手动输入或引发异常
-            api_key = input("Enter your OpenAI API key: ")
+                # 将新的API密钥保存到配置文件中
+                config['LLM_MODEL_CONFIG']['API_KEY'] = api_key
+                with open(module_path / 'config.yaml', 'w') as file:
+                    yaml.dump(config, file)
 
-            # 将新的API密钥保存到配置文件中
-            config['LLM_MODEL_CONFIG']['API_KEY'] = api_key
-            with open(module_path / 'config.yaml', 'w') as file:
-                yaml.dump(config, file)
+            self.client = OpenAI(
+                base_url=self.api_url, 
+                api_key=self.api_key,
+                http_client=httpx.Client(
+                    base_url=self.api_url,
+                    follow_redirects=True,
+                ),
+            )
 
-        self.client = OpenAI(
-            base_url=self.api_url, 
-            api_key=self.api_key,
-            http_client=httpx.Client(
-                base_url=self.api_url,
-                follow_redirects=True,
-            ),
-        )
+        else:
+            self.use_llm = False
 
     def process_video_description(self, json_string):
-
+        if not self.use_llm:
+            return json_string
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=[
@@ -46,7 +52,6 @@ class TxtConverter:
         )
         result = completion.choices[0].message.content
         logger.info(result)
-        #logger.info("result: " + result.encode('gbk', errors='replace').decode('gbk'))
 
         return result # 返回生成结果
 
@@ -66,7 +71,10 @@ class TxtConverter:
         content = final_txt[:-2]
         if addtxt:
             content = content + addtxt #在这里加入附加文本然后一起丢进llm跑
-        logger.info("filtered_prompt result:"+content.encode('gbk', errors='replace').decode('gbk'))
+        logger.info("filtered_prompt result:"+content.encode('utf8', errors='replace').decode('utf8'))
+
+        if not self.use_llm:
+            return content
 
         # Step 2. Converted Prompt
         completion = self.client.chat.completions.create(
@@ -81,13 +89,16 @@ class TxtConverter:
             ]
         )
         converted_result = completion.choices[0].message.content
-        logger.info("converted result: " + converted_result.encode('gbk', errors='replace').decode('gbk'))
+        logger.info("converted result: " + converted_result.encode('utf8', errors='replace').decode('utf8'))
         return converted_result
     
     def video_txt_converter(self, content, addtxt = None):
         if addtxt:
             content = content + addtxt #在这里加入附加文本然后一起丢进llm跑
-            
+
+        if not self.use_llm:
+            return content
+        
         completion = self.client.chat.completions.create(
             model=self.model,
             messages = [
@@ -102,7 +113,7 @@ class TxtConverter:
             ]
         )
         converted_result = completion.choices[0].message.content
-        logger.info("converted result: " + converted_result.encode('gbk', errors='replace').decode('gbk'))
+        logger.info("converted result: " + converted_result.encode('utf8', errors='replace').decode('utf8'))
         return converted_result
 
 if __name__ == "__main__":
