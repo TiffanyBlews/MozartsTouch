@@ -6,5 +6,5 @@ outputs
 .vs
 model
 musicgen.wav
-api_key.ini
 videos
+config.yaml

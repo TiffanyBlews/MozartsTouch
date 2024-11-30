@@ -50,6 +50,7 @@ python main.py --test_mode
 3. Run `python start_server.py`.
 4. Access http://localhost:3001/docs#/ to view the backend documentation and test the APIs.
 
+The related frontend project is at https://github.com/ScientificW/MozartFrontEndConnect
 
 
 ## TO-DO List

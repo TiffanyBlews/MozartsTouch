@@ -6,7 +6,7 @@ from loguru import logger
 
 
 module_path = Path(__file__).resolve().parent.parent  # module_path为模块根目录（`/MozartsTouch`）
-with open(module_path / 'config.yaml', 'r') as file:
+with open(module_path / 'config.yaml', 'r', encoding='utf8') as file:
     config = yaml.safe_load(file)
 
 class TxtConverter:

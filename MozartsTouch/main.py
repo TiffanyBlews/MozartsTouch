@@ -24,7 +24,7 @@ else:
 
 
 module_path = Path(__file__).resolve().parent 
-with open(module_path / 'config.yaml', 'r') as file:
+with open(module_path / 'config.yaml', 'r', encoding='utf8') as file:
     config = yaml.safe_load(file)
 
 test_mode = config['TEST_MODE']
