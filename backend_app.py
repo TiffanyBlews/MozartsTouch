@@ -94,7 +94,7 @@ async def upload_file(file: UploadFile = File(...), instruction: Optional[str] =
     Return: 
     - prompt: 图片转文本结果
     - converted_prompt: 用于生成音乐的提示词文本
-    - result_file_name: 视频配合生成的音频的文件名。
+    - result_file_url: 视频配合生成的音频的最终视频，使用GET方法访问"result_file_url"获取视频文件
     '''
     logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
@@ -107,9 +107,13 @@ async def upload_file(file: UploadFile = File(...), instruction: Optional[str] =
 
     result = MozartsTouch.video_to_music_generate(str(video_path), image_recog, music_gen, output_folder, instruction)
 
-    key_names = ("prompt", "converted_prompt", "result_file_name")
-    result_dict =  {key: value for key, value in zip(key_names, result)}
+    key_names = ("prompt", "converted_prompt", "result_file_url")
 
+    prefix = 'http://localhost:3001/music/'  # 将musicgen生成的音乐文件名包装成URL
+    filename_with_prefix = prefix + result[2]
+    result = (*result[:2], filename_with_prefix)
+    
+    result_dict =  {key: value for key, value in zip(key_names, result)}
     logger.info('**********FINAL RESULT**********')
     logger.info(result_dict)
 
