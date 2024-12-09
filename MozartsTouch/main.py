@@ -70,7 +70,8 @@ class Entry:
     def init_video(self):
         assert self.img is None
         '''将视频帧进行采样并分别识别，同时获取视频长度作为self.music_duration，之后调用self.video_txt_descriper合成描述视频的一段话'''
-        videoBLIP = PreProcessVideos(str(self.video_path), self.image_recog, prompt_amount=config['VIDEO_SAMPLE_AMOUNT'])
+        videoBLIP = PreProcessVideos(str(self.video_path), self.image_recog, \
+                                     prompt_amount=config['CAPTION_MODEL_CONFIG']['VIDEO_SAMPLE_AMOUNT'])
         video_frame_texts = videoBLIP.process_video()
         self.music_duration = videoBLIP.video_seconds + 1
 
