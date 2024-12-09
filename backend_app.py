@@ -15,13 +15,13 @@ from PIL import Image
 from pathlib import Path
 app_path = Path(__file__).parent# app_path为项目根目录（`/`）
 import MozartsTouch
-import cv2 as cv
 from loguru import logger
+from typing import Optional
 
 
         
 music_gen = MozartsTouch.import_music_generator()
-image_recog = MozartsTouch.import_clip()
+image_recog = MozartsTouch.import_ir()
 
 
 # 创建后端应用
@@ -44,22 +44,22 @@ def read_image_from_binary(binary: BytesIO) -> Image.Image:
 
 #上传部分主体
 
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...), music_duration: int = Form(...), mode: int = Form(...), instruction: str= Form(...)):
+@app.post("/image")
+async def upload_file(file: UploadFile = File(...),
+                      music_duration: Optional[int] = Form(10),
+                      instruction: Optional[str] = Form("")):
     '''
     上传图片以进行音乐生成
 
     Parameters:
     - file: 图片文件，Content-Type: image/*
-    - music_duration: 指定生成时间，请输入整数，以秒为单位
-    - mode: 0为测试模式，1为Suno AI，2为MusicGen-Small，3为MusicGen-Medium
-    - instruction: 用户输入的限定文本
+    - music_duration: 指定生成时间，请输入整数，以秒为单位。默认值为10秒。若使用Suno AI生成音乐则此参数会被忽略
+    - instruction: 用户输入的限定文本，可选
 
     Return: 
     - prompt: 图片转文本结果
     - converted_prompt: 用于生成音乐的提示词文本
-    - result_file_url: 生成的音频URL，使用GET方法访问"result_file_url"获取音频文件。
-        如果使用Suno AI会一次生成两个音频，此时该值为字符串列表
+    - result_file_url: 生成的音频URL，使用GET方法访问"result_file_url"获取音频文件
     '''
     logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
@@ -83,8 +83,19 @@ async def upload_file(file: UploadFile = File(...), music_duration: int = Form(.
     return result_dict
 
 @app.post("/video")
-async def upload_file(file: UploadFile = File(...), instruction: str = File(...)):
+async def upload_file(file: UploadFile = File(...), instruction: Optional[str] = Form('')):
+    '''
+    上传视频以进行音乐生成
 
+    Parameters:
+    - file: 图片文件，Content-Type: image/*
+    - instruction: 用户输入的限定文本，可选
+
+    Return: 
+    - prompt: 图片转文本结果
+    - converted_prompt: 用于生成音乐的提示词文本
+    - result_file_name: 视频配合生成的音频的文件名。
+    '''
     logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
     video_path  = app_path / "videos" / file.filename
@@ -94,13 +105,7 @@ async def upload_file(file: UploadFile = File(...), instruction: str = File(...)
     with open(video_path, "wb") as f: 
         f.write(contents)
 
-    # 读取视频时长
-    vidcapture = cv.VideoCapture(str(video_path))
-    fps = vidcapture.get(cv.CAP_PROP_FPS)
-    totalNoFrames = vidcapture.get(cv.CAP_PROP_FRAME_COUNT)
-    music_duration = totalNoFrames // fps
-
-    result = MozartsTouch.video_to_music_generate(str(video_path), music_duration, music_gen, output_folder, instruction)
+    result = MozartsTouch.video_to_music_generate(str(video_path), image_recog, music_gen, output_folder, instruction)
 
     key_names = ("prompt", "converted_prompt", "result_file_name")
     result_dict =  {key: value for key, value in zip(key_names, result)}
@@ -125,4 +130,4 @@ async def get_music(result_file_name: str):
 
 @app.get("/")
 async def root():
-    return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端域名，在域名后面加上`/docs#/`访问后端API文档页面！"}
+    return {"message": "Good morning, and in case I don't see you, good afternoon, good evening, and good night! 这是“点彩成乐”后端根域名，在域名后面加上`/docs#/`访问后端API文档页面！"}

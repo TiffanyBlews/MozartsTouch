@@ -56,22 +56,22 @@ class TxtConverter:
         return result # 返回生成结果
 
     def txt_converter(self, content, addtxt = None):
-        # Step 1. Filtered Prompt
-        final_txt = ""
-        result_list = content.split(", ")
-        it = 0
-        for rel in result_list:
-            # print(rel)
-            it += 1        
-            if it == 3 : continue # list[3] 表示图片来源，可丢弃
-            if it == 2 : # list[2] 表示图片创作者，一般都是瞎猜的，可丢弃
-                rel = rel.split(" by")[0]  
-            final_txt += rel + ", "
+        # # Step 1. Filtered Prompt
+        # final_txt = ""
+        # result_list = content.split(", ")
+        # it = 0
+        # for rel in result_list:
+        #     # print(rel)
+        #     it += 1        
+        #     if it == 3 : continue # list[3] 表示图片来源，可丢弃
+        #     if it == 2 : # list[2] 表示图片创作者，一般都是瞎猜的，可丢弃
+        #         rel = rel.split(" by")[0]  
+        #     final_txt += rel + ", "
         
-        content = final_txt[:-2]
+        # content = final_txt[:-2]
         if addtxt:
             content = content + addtxt #在这里加入附加文本然后一起丢进llm跑
-        logger.info("filtered_prompt result:"+content.encode('utf8', errors='replace').decode('utf8'))
+        # logger.info("filtered_prompt result:"+content.encode('utf8', errors='replace').decode('utf8'))
 
         if not self.use_llm:
             return content

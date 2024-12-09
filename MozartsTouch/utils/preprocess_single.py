@@ -4,7 +4,6 @@ import torchvision
 import json
 import os
 import random 
-import numpy as np
 import argparse
 import decord
 
@@ -13,8 +12,13 @@ from torchvision import transforms
 from tqdm import tqdm
 from PIL import Image
 from decord import VideoReader, cpu
-from transformers import BlipProcessor, BlipForConditionalGeneration
+# from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import AutoModelForCausalLM, AutoProcessor
 from loguru import logger
+if __name__=="__main__":
+    from image_processing import ImageRecognization
+else:
+    from .image_processing import ImageRecognization
 
 module_path = Path(__file__).resolve().parent.parent  # module_path为模块根目录（`/MozartsTouch`）
 
@@ -24,13 +28,10 @@ class PreProcessVideos:
     def __init__(
             self, 
             video_path,
+            image_recognization :ImageRecognization,
             random_start_frame = False,
             clip_frame_data = False,
-            max_frames = 30,
-            beam_amount = 7,
             prompt_amount = 25,
-            min_prompt_length = 15,
-            max_prompt_length = 30,
         ):
 
         # Paramaters for parsing videos
@@ -38,15 +39,10 @@ class PreProcessVideos:
         self.video_path = video_path
         self.random_start_frame = random_start_frame
         self.clip_frame_data = clip_frame_data
-        self.max_frames = max_frames
         self.vid_types = (".mp4", ".avi", ".mov", ".webm", ".flv", ".mjpeg")
-
-        # Parameters for BLIP2
-        self.processor = None
-        self.blip_model = None
-        self.beam_amount = beam_amount
-        self.min_length = min_prompt_length
-        self.max_length = max_prompt_length
+        self.video_frames = None
+        self.video_seconds = None
+        self.image_recognization = image_recognization
 
         # Helper parameters
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -83,16 +79,9 @@ class PreProcessVideos:
         }
 
     # Load BLIP for processing
-    def load_blip(self, model_name = "blip-image-captioning-base"):
-        logger.info(f"Loading BLIP model {model_name}")
-
-        processor = BlipProcessor.from_pretrained(module_path / "model" / f"{model_name}_processor")
-        model = BlipForConditionalGeneration.from_pretrained(
-            module_path / "model" / f"{model_name}_model", torch_dtype=torch.float16
-        ).to(self.device)
-
-        self.processor = processor
-        self.blip_model = model
+    def load_model(self, model_name = "Florence-2-large"):
+        if self.image_recognization.model is None or self.image_recognization.processor is None:
+            self.image_recognization.load_model(model_name)
 
     # Process the frames to get the length and image.
     # The limit parameter ensures we don't get near the max frame length.
@@ -116,19 +105,8 @@ class PreProcessVideos:
     def get_frame_range(self, derterministic):
         return range(self.prompt_amount) if self.random_start_frame else derterministic
 
-    def process_blip(self, image: Image):
-        inputs = self.processor(images=image, return_tensors="pt").to(self.device, torch.float16)
-        generated_ids = self.blip_model.generate(
-                **inputs, 
-                num_beams=self.beam_amount, 
-                min_length=self.min_length, 
-                max_length=self.max_length
-            )
-        generated_text = self.processor.batch_decode(
-            generated_ids, 
-            skip_special_tokens=True)[0].strip()
-        
-        return generated_text
+    def image_caption(self, image: Image, task='<MORE_DETAILED_CAPTION>'):
+        return self.image_recognization.img2txt(image, task)
     
     # def get_out_paths(self, prompt, frame_number):
     #     out_name= f"{prompt}_{str(frame_number)}"
@@ -152,48 +130,49 @@ class PreProcessVideos:
 
     # Main loop for processing all videos.
     def process_video(self):
-        self.load_blip()
+        self.load_model()
         video_path = self.video_path
         video_frame_list = []
 
         if not os.path.exists(video_path):
             raise ValueError(f"{video_path} does not exist.")
 
-        try:
-            video_reader = VideoReader(video_path, ctx=cpu(0))
-            video_len = len(video_reader)
-            frame_step = abs(video_len // self.prompt_amount)
-            derterministic_range = range(1, abs(video_len - 1), frame_step) if frame_step else range(video_len)
-        except:
-            logger.error(f"Error loading {video_path}. Video may be unsupported or corrupt.")
-            return
+        # try:
+        video_reader = VideoReader(video_path, ctx=cpu(0))
+        self.video_frames = int(len(video_reader))
+        self.video_seconds = self.video_frames // video_reader.get_avg_fps()
+        frame_step = abs(self.video_frames // self.prompt_amount)
+        derterministic_range = range(1, abs(self.video_frames - 1), frame_step) if frame_step else range(self.video_frames)
+        # except:
+        #     logger.error(f"Error loading {video_path}. Video may be unsupported or corrupt.")
+        #     return
 
-        try:
-            num_frames = int(len(video_reader))
-            # video_config = self.build_video_config(video_path, num_frames)
+        # try:
+        # video_config = self.build_video_config(video_path, num_frames)
 
-            for i in tqdm(
-                    self.get_frame_range(derterministic_range), 
-                    desc=f"Processing {os.path.basename(video_path)}"
-                ):
+        for i in tqdm(
+                self.get_frame_range(derterministic_range), 
+                desc=f"Processing {os.path.basename(video_path)}"
+            ):
 
-                frame_number, image = self.video_processor(
-                    video_reader, 
-                    num_frames, 
-                    self.random_start_frame,
-                    frame_num=i
-                )
+            frame_number, image = self.video_processor(
+                video_reader, 
+                self.video_frames, 
+                self.random_start_frame,
+                frame_num=i
+            )
 
-                prompt = self.process_blip(image)
-                video_data = self.build_video_data(frame_number, prompt)
-                video_frame_list.append(video_data)
+            prompt = self.image_caption(image)
+            video_data = self.build_video_data(frame_number, prompt)
+            video_frame_list.append(video_data)
 
-        except Exception as e:
-            logger.error(e)
-            return
+        # except Exception as e:
+        #     logger.error(e)
+
 
         # logger.info(f"Done. Saving train config to {self.save_dir}.")
         # self.save_train_config(config)
+        # logger.info(video_frame_list)
         return str(video_frame_list)
 
 
