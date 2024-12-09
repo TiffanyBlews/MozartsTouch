@@ -4,7 +4,7 @@ TEST_MODE: False
 # Change this to disable LLM for ablation study purpose
 USE_LLM: True
 
-DEFAULT_CAPTION_MODEL: blip-image-captioning-base
+DEFAULT_CAPTION_MODEL: Florence-2-large
 
 DEFAULT_LLM_MODEL: qwen2.5-instruct-32b-int4
 
@@ -13,6 +13,7 @@ DEFAULT_MUSIC_MODEL: musicgen-small
 
 
 CAPTION_MODEL_CONFIG:
+  VIDEO_SAMPLE_AMOUNT: 20
 
 LLM_MODEL_CONFIG:
   # Platform type
