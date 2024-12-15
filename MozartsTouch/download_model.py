@@ -26,9 +26,8 @@ def download_and_save_model(model_class, processor_class, model_name, save_dir):
 
     try:
         logger.info(f"正在尝试加载模型和处理器: {model_name}...")
-        raise
-        model = model_class.from_pretrained(model_save_path)
-        processor = processor_class.from_pretrained(processor_save_path)
+        model = model_class.from_pretrained(model_save_path,trust_remote_code=True)
+        processor = processor_class.from_pretrained(processor_save_path,trust_remote_code=True)
 
         logger.info(f"{model_name} 加载成功！")
     except Exception as e:
