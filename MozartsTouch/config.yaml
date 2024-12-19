@@ -22,7 +22,7 @@ LLM_MODEL_CONFIG:
   PLATFORM_TYPE: openai
 
   # OpenAI API URL
-  API_BASE_URL: http://114.514.810.893/v1
+  API_BASE_URL: http://10.29.118.247:9997/v1
 
   # api key if available
   API_KEY: EMPTY

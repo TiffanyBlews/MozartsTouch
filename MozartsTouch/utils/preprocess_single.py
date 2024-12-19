@@ -78,11 +78,6 @@ class PreProcessVideos:
             "prompt": prompt
         }
 
-    # Load BLIP for processing
-    def load_model(self, model_name = "Florence-2-large"):
-        if self.image_recognization.model is None or self.image_recognization.processor is None:
-            self.image_recognization.load_model(model_name)
-
     # Process the frames to get the length and image.
     # The limit parameter ensures we don't get near the max frame length.
     def video_processor(
@@ -129,8 +124,7 @@ class PreProcessVideos:
         torchvision.io.write_video(save_filepath, frames, fps=30)
 
     # Main loop for processing all videos.
-    def process_video(self):
-        self.load_model()
+    def process_video(self) -> list:
         video_path = self.video_path
         video_frame_list = []
 
@@ -173,7 +167,7 @@ class PreProcessVideos:
         # logger.info(f"Done. Saving train config to {self.save_dir}.")
         # self.save_train_config(config)
         # logger.info(video_frame_list)
-        return str(video_frame_list)
+        return video_frame_list
 
 
 if __name__ == "__main__":

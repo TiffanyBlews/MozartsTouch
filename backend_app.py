@@ -19,16 +19,13 @@ from loguru import logger
 from typing import Optional
 
 
-        
 music_gen = MozartsTouch.import_music_generator()
 image_recog = MozartsTouch.import_ir()
 
-
-# 创建后端应用
-app = FastAPI(title='点彩成乐',description='“点彩成乐”项目后端')
-
+# Create FastAPI app
+app = FastAPI(title='点彩成乐', description='“点彩成乐”项目后端')
+# Add CORS middleware
 origins = ["http://localhost:5173"]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -37,17 +34,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def read_image_from_binary(binary: BytesIO) -> Image.Image:
-    '''将二进制输入转换为PIL Image对象'''
-    img = Image.open(binary)
-    return img
-
-#上传部分主体
 
 @app.post("/image")
-async def upload_file(file: UploadFile = File(...),
-                      music_duration: Optional[int] = Form(10),
-                      instruction: Optional[str] = Form("")):
+async def upload_image(file: UploadFile = File(...),
+                       music_duration: Optional[int] = Form(10),
+                       instruction: Optional[str] = Form("")):
     '''
     上传图片以进行音乐生成
 
@@ -64,26 +55,21 @@ async def upload_file(file: UploadFile = File(...),
     logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
 
-
-    img = read_image_from_binary(file.file)
+    img = Image.open(file.file)
     result = MozartsTouch.img_to_music_generate(img, music_duration, image_recog, music_gen, output_folder)
 
     if not music_gen.model_name.startswith("suno"):
-        prefix = 'http://localhost:3001/music/'  # 将musicgen生成的音乐文件名包装成URL
-        filename_with_prefix = prefix + result[2]
+        prefix = 'http://localhost:3001/music/'
+        result = (*result[:2], prefix + result[2])
 
-        result = (*result[:2], filename_with_prefix)
-
-    key_names = ("prompt", "converted_prompt", "result_file_url")
-    
-    result_dict =  {key: value for key, value in zip(key_names, result)}
+    result_dict = {key: value for key, value in zip(("prompt", "converted_prompt", "result_file_url"), result)}
     logger.info('**********FINAL RESULT**********')
     logger.info(result_dict)
 
     return result_dict
 
 @app.post("/video")
-async def upload_file(file: UploadFile = File(...), instruction: Optional[str] = Form('')):
+async def upload_video(file: UploadFile = File(...), instruction: Optional[str] = Form('')):
     '''
     上传视频以进行音乐生成
 
@@ -98,27 +84,24 @@ async def upload_file(file: UploadFile = File(...), instruction: Optional[str] =
     '''
     logger.info("Request Received Successfully, Processing...")
     output_folder = app_path / "outputs"
-    video_path  = app_path / "videos" / file.filename
+    video_path = app_path / "videos" / file.filename
 
     # 将视频保存至本地，然后读取视频帧
     contents = await file.read()
-    with open(video_path, "wb") as f: 
+    with open(video_path, "wb") as f:
         f.write(contents)
 
     result = MozartsTouch.video_to_music_generate(str(video_path), image_recog, music_gen, output_folder, instruction)
 
-    key_names = ("prompt", "converted_prompt", "result_file_url")
-
     prefix = 'http://localhost:3001/music/'  # 将musicgen生成的音乐文件名包装成URL
     filename_with_prefix = prefix + result[2]
     result = (*result[:2], filename_with_prefix)
-    
-    result_dict =  {key: value for key, value in zip(key_names, result)}
+
+    result_dict = {key: value for key, value in zip(("prompt", "converted_prompt", "result_file_url"), result)}
     logger.info('**********FINAL RESULT**********')
     logger.info(result_dict)
 
     return result_dict
-
 
 @app.get("/music/{result_file_name}")
 async def get_music(result_file_name: str):

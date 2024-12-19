@@ -22,37 +22,39 @@ class Suno:
     def post_suno_api(self, task, payload):
         url = self.task_list[task]
         response = requests.post(url, json=payload, headers={'Content-Type': 'application/json'})
+        response.raise_for_status()
         return response.json()
     
-    def get_suno_api(self, task, audio_ids = None):
+    def get_suno_api(self, task, audio_ids=None):
         url = self.task_list[task]
         if audio_ids:
             url += audio_ids
 
         response = requests.get(url)
+        response.raise_for_status()
         return response.json()
 
     def generate(self, text: str):
-        data = self.post_suno_api('generate_audio_by_prompt', 
-            {
-                "prompt": text,
-                "make_instrumental": True,
-                "wait_audio": False
-            })
-        # logger.info(data)
-        ids = f"{data[0]['id']},{data[1]['id']}"
-        logger.info(f"ids: {ids}")
+        data = self.post_suno_api('generate_audio_by_prompt', {
+            "prompt": text,
+            "make_instrumental": True,
+            "wait_audio": False
+        })
+        ids = ",".join([item['id'] for item in data])
+        logger.info(f"Generated IDs: {ids}")
 
         for _ in range(60):
             try:
-                data = self.get_suno_api('get_audio_information' ,ids)
+                data = self.get_suno_api('get_audio_information', ids)
                 if data[1]["status"] == 'streaming':
-                    logger.info(f"{data[1]['id']} ==> {data[1]['audio_url']}")
+                    logger.info(f"Audio URL: {data[1]['audio_url']}")
                     return data[1]['audio_url']
-            except: continue
-            # sleep 5s
+            except Exception as e:
+                logger.warning(f"Error fetching audio information: {e}")
             time.sleep(5)
 
+        logger.error("Failed to generate audio within the expected time.")
+        return None
 
 if __name__ == '__main__':
     suno = Suno()

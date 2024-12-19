@@ -2,6 +2,7 @@ Pillow>=10.0.0
 transformers>=4.31.0
 torch>=2.0.1
 openai
+einops
 decord
 moviepy
 loguru

@@ -29,13 +29,12 @@ module_path = Path(__file__).resolve().parent
 with open(module_path / 'config.yaml', 'r', encoding='utf8') as file:
     config = yaml.safe_load(file)
 
-test_mode = config['TEST_MODE']
+test_mode =  config.get('TEST_MODE', False)
+logger.info(f"Test mode: {test_mode}")
 
 def import_ir():
     '''导入图像识别模型'''
-    ir = ImageRecognization()
-    if not test_mode:
-        ir.load_model(config['DEFAULT_CAPTION_MODEL'])
+    ir = ImageRecognization(test_mode=test_mode)
     return ir
 
 def import_music_generator():
@@ -58,24 +57,25 @@ class Entry:
         self.txt = None
         self.txt_con = TxtConverter()
         self.converted_txt = None
-        self.addtxt = addtxt # 追加文本输入
-        self.image_recog = image_recog # 使用传入的图像识别模型对象
+        self.addtxt = addtxt  # 追加文本输入
+        self.image_recog = image_recog  # 使用传入的图像识别模型对象
         self.music_gen = music_gen  # 使用传入的音乐生成对象
         self.music_duration = music_duration
         self.output_folder = output_folder
-        self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") # 记录用户上传时间作为标识符
+        self.timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")  # 记录用户上传时间作为标识符
         self.result_urls = None
         self.music_bytes_io = None
 
     def init_video(self):
         assert self.img is None
-        '''将视频帧进行采样并分别识别，同时获取视频长度作为self.music_duration，之后调用self.video_txt_descriper合成描述视频的一段话'''
-        videoBLIP = PreProcessVideos(str(self.video_path), self.image_recog, \
-                                     prompt_amount=config['CAPTION_MODEL_CONFIG']['VIDEO_SAMPLE_AMOUNT'])
-        video_frame_texts = videoBLIP.process_video()
-        self.music_duration = videoBLIP.video_seconds + 1
-
-        logger.info(self.music_duration)
+        # 将视频帧进行采样并分别识别，同时获取视频长度作为self.music_duration，之后调用self.video_txt_descriper合成描述视频的一段话
+        video_processor = PreProcessVideos(
+            str(self.video_path), 
+            self.image_recog, 
+            prompt_amount=config['CAPTION_MODEL_CONFIG']['VIDEO_SAMPLE_AMOUNT']
+        )
+        video_frame_texts = video_processor.process_video()
+        self.music_duration = video_processor.video_seconds + 1
         self.video_txt_descriper(video_frame_texts)
 
 
@@ -95,6 +95,7 @@ class Entry:
     def video_txt_descriper(self, texts):
         '''将每帧的描述文本转换为视频整体的描述文本'''
         self.txt = self.txt_con.process_video_description(texts)
+        logger.info(f"Video description: {self.txt}")
 
     def video_txt_converter(self):
         '''利用LLM优化已有的视频描述文本'''
