@@ -1,7 +1,7 @@
 # Mozart's Touch: Multi-Modal Music Generation with Pre-Trained Models
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2405.02801) [![GitHub Stars](https://img.shields.io/github/stars/TiffanyBlews/MozartsTouch?style=social)](https://github.com/TiffanyBlews/MozartsTouch) [![githubio](https://img.shields.io/badge/GitHub.io-Demo_Page-blue?logo=Github&style=flat-square)](https://tiffanyblews.github.io/MozartsTouch-demo/)
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2405.02801)  [![githubio](https://img.shields.io/badge/GitHub.io-Demo_Page-blue?logo=Github&style=flat-square)](https://tiffanyblews.github.io/MozartsTouch-demo/) [![GitHub Stars](https://img.shields.io/github/stars/TiffanyBlews/MozartsTouch?style=social)](https://github.com/TiffanyBlews/MozartsTouch)
 
-This is the official implementation of [Mozart's Touch: A Lightweight Multi-modal Music Generation Framework Based on Pre-Trained Large Models](https://arxiv.org/abs/2405.02801)
+This is the official implementation of [Mozart's Touch: A Lightweight Multi-modal Music Generation Framework Based on Pre-Trained Large Models](https://arxiv.org/abs/2405.02801) (Accepted by AIGC 2024)
 
 ![](logo.png)
 
@@ -66,5 +66,22 @@ The related frontend project is at https://github.com/ScientificW/MozartFrontEnd
 - 尝试Florence-2等最新模型
 - 优化音乐生成部分MusicGen模型的代码（主要需求：优化生成效率）
 
+## Citation
+```
+@inproceedings{10.1117/12.3067408,
+author = {Jiajun Li and Tianze Xu and Xuesong Chen and Xinrui Yao and Jingchou Han and Shuchang Liu},
+title = {{Mozart’s Touch: a lightweight multimodal music generation framework based on pre-trained large models}},
+volume = {13649},
+booktitle = {International Conference on AI-Generated Content (AIGC 2024)},
+editor = {Feng Zhao and Duoqian Miao},
+organization = {International Society for Optics and Photonics},
+publisher = {SPIE},
+pages = {136490R},
+keywords = {AIGC, Multi-modal, Neural Network, Large Language Model, Music Generation},
+year = {2025},
+doi = {10.1117/12.3067408},
+URL = {https://doi.org/10.1117/12.3067408}
+}
+```
 
 
